@@ -1,4 +1,5 @@
 #include "Renderer/GPU2DRenderer.hpp"
+#include "Renderer/BitmapFont.hpp"
 #include "Debug/Logger.hpp"
 #include <cmath>
 #include <algorithm>
@@ -123,13 +124,30 @@ void GPU2DRenderer::draw_sprite(const std::string& textureId, const Math::Vec2& 
 
 void GPU2DRenderer::draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale) {
     if (!m_window) return;
-    int charWidth = static_cast<int>(8 * scale);
+    uint32_t hexColor = colorToHex(color);
     int px = static_cast<int>(position.x);
     int py = static_cast<int>(position.y);
+    int s = std::max(1, static_cast<int>(scale));
 
     for (size_t i = 0; i < text.size(); ++i) {
-        Math::AABB charBox(Math::Vec2(px + i * charWidth, py), Math::Vec2(px + (i + 1) * charWidth - 2, py + charWidth * 1.5));
-        draw_rect(charBox, color, false);
+        char c = text[i];
+        if (c >= 'a' && c <= 'z') c = c - 'a' + 'A';
+        int glyphIdx = (c >= 32 && c <= 95) ? (c - 32) : 0;
+
+        for (int row = 0; row < 7; ++row) {
+            uint8_t rowBits = FONT_5X7[glyphIdx][row];
+            for (int col = 0; col < 5; ++col) {
+                if (rowBits & (1 << (4 - col))) {
+                    for (int dy = 0; dy < s; ++dy) {
+                        for (int dx = 0; dx < s; ++dx) {
+                            int drawX = px + static_cast<int>(i) * (6 * s) + (col * s) + dx;
+                            int drawY = py + (row * s) + dy;
+                            m_window->set_pixel(drawX, drawY, hexColor);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

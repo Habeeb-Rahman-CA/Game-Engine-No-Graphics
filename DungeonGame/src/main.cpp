@@ -40,26 +40,28 @@ int main() {
     auto window = Engine::Platform::Platform::getInstance().getWindow();
     Renderer::setBackend(std::make_unique<GPU2DRenderer>(window));
 
-    // Custom Game Loop Callback
-    int frameCount = 0;
+    // Animated Game Loop (runs until window is closed)
+    float timeAcc = 0.0f;
     engine.run([&](double dt) {
-        (void)dt;
-        frameCount++;
+        timeAcc += static_cast<float>(dt);
+
+        // Animate positions for active gameplay feedback
+        float playerY = 250.0f + std::sin(timeAcc * 3.0f) * 40.0f;
+        float enemyX  = 500.0f + std::cos(timeAcc * 2.0f) * 60.0f;
 
         Renderer::begin_frame();
-        Renderer::clear(Color(0.1f, 0.05f, 0.15f, 1.0f)); // Dark Dungeon BG
+        Renderer::clear(Color(0.08f, 0.05f, 0.12f, 1.0f)); // Dark Dungeon BG
 
-        // Draw Player & Enemy Sprites / Shapes
-        Renderer::draw_rect(AABB(Vec2(80, 220), Vec2(120, 280)), Color::Cyan, true);
-        Renderer::draw_circle(Circle(Vec2(500, 250), 30), Color::Red, true);
-        Renderer::draw_text("DUNGEON QUEST 2D (PUBLIC SDK)", Vec2(220, 40), Color::Yellow, 1.5f);
+        // Draw Player (Cyan Box) & Enemy (Red Pulsing Circle)
+        Renderer::draw_rect(AABB(Vec2(80, playerY - 30), Vec2(140, playerY + 30)), Color::Cyan, true);
+        Renderer::draw_circle(Circle(Vec2(enemyX, 250), 35.0f + std::sin(timeAcc * 4.0f) * 5.0f), Color::Red, true);
+        Renderer::draw_line(Vec2(100, 500), Vec2(700, 500), Color::Green);
+
+        // HUD Text
+        Renderer::draw_text("DUNGEON QUEST 2D - PUBLIC SDK DEMO", Vec2(180, 40), Color::Yellow, 1.5f);
+        Renderer::draw_text("Press Window Close [X] to Exit Game", Vec2(220, 540), Color::White, 1.0f);
 
         Renderer::end_frame();
-
-        if (frameCount >= 5) {
-            LOG_INFO("Dungeon Game loop execution completed 5 frames successfully via Public Engine SDK!");
-            engine.shutdown();
-        }
     });
 
     LOG_INFO("==========================================================================");

@@ -71,6 +71,10 @@ target_link_libraries(engine_tests PRIVATE EngineCore)
 add_executable(engine_benchmarks benchmarks/benchmark_runner.cpp)
 target_link_libraries(engine_benchmarks PRIVATE EngineCore)
 
+# Dungeon Game Executable (Public SDK Demo)
+add_executable(dungeon_game DungeonGame/src/main.cpp)
+target_link_libraries(dungeon_game PRIVATE EngineCore ${X11_LIBRARIES})
+
 # Target options
 target_compile_options(game_engine PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_options(engine_tests PRIVATE -Wall -Wextra -Wpedantic)
