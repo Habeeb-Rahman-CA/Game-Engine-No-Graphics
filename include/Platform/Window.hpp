@@ -11,12 +11,12 @@ namespace Platform {
 
 struct WindowProps {
     std::string title = "Basic Game Engine - Graphical Window";
-    uint32_t width = 800;
-    uint32_t height = 600;
+    uint32_t width = 1024;
+    uint32_t height = 640;
     bool vsync = true;
     bool fullscreen = false;
 
-    WindowProps(const std::string& t = "Basic Game Engine - Graphical Window", uint32_t w = 800, uint32_t h = 600)
+    WindowProps(const std::string& t = "Basic Game Engine - Graphical Window", uint32_t w = 1024, uint32_t h = 640)
         : title(t), width(w), height(h) {}
 };
 
@@ -25,7 +25,7 @@ public:
     explicit Window(const WindowProps& props = WindowProps());
     ~Window();
 
-    bool initialize();
+    bool initialize(const WindowProps& props = WindowProps());
     void poll_events();
     void swap_buffers();
     void close();

@@ -8,32 +8,37 @@ UIElement::UIElement(const std::string& id, Vec2 pos, Vec2 size, UIAnchor anchor
     : m_id(id), m_position(pos), m_size(size), m_anchor(anchor), m_visible(true) {
 }
 
-Vec2 UIElement::getAnchoredPosition(int screenWidth, int screenHeight) const {
-    Vec2 pos = m_position;
+Vec2 UIElement::getAnchoredPosition(int vx, int vy, int vw, int vh) const {
+    Vec2 pos;
 
     switch (m_anchor) {
         case UIAnchor::TopLeft:
+            pos.x = vx + m_position.x;
+            pos.y = vy + m_position.y + 24; // Below Viewport header bar
             break;
         case UIAnchor::TopCenter:
-            pos.x += screenWidth * 0.5;
+            pos.x = vx + (vw - m_size.x) * 0.5 + m_position.x;
+            pos.y = vy + m_position.y + 24;
             break;
         case UIAnchor::TopRight:
-            pos.x = screenWidth - m_position.x - m_size.x;
+            pos.x = vx + vw - m_position.x - m_size.x;
+            pos.y = vy + m_position.y + 24;
             break;
         case UIAnchor::BottomLeft:
-            pos.y = screenHeight - m_position.y - m_size.y;
+            pos.x = vx + m_position.x;
+            pos.y = vy + vh - m_position.y - m_size.y;
             break;
         case UIAnchor::BottomCenter:
-            pos.x += screenWidth * 0.5;
-            pos.y = screenHeight - m_position.y - m_size.y;
+            pos.x = vx + (vw - m_size.x) * 0.5 + m_position.x;
+            pos.y = vy + vh - m_position.y - m_size.y - 8;
             break;
         case UIAnchor::BottomRight:
-            pos.x = screenWidth - m_position.x - m_size.x;
-            pos.y = screenHeight - m_position.y - m_size.y;
+            pos.x = vx + vw - m_position.x - m_size.x;
+            pos.y = vy + vh - m_position.y - m_size.y;
             break;
         case UIAnchor::Center:
-            pos.x += (screenWidth - m_size.x) * 0.5;
-            pos.y += (screenHeight - m_size.y) * 0.5;
+            pos.x = vx + (vw - m_size.x) * 0.5 + m_position.x;
+            pos.y = vy + (vh - m_size.y) * 0.5 + m_position.y;
             break;
     }
 
@@ -45,9 +50,9 @@ UIText::UIText(const std::string& id, const std::string& text, Vec2 pos, Color c
     : UIElement(id, pos, Vec2(static_cast<double>(text.size() * 8), 16.0), anchor), m_text(text), m_color(col) {
 }
 
-void UIText::render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) {
+void UIText::render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) {
     if (!m_visible) return;
-    Vec2 p = getAnchoredPosition(screenWidth, screenHeight);
+    Vec2 p = getAnchoredPosition(vx, vy, vw, vh);
     renderer.draw_text(m_text, p, m_color);
 }
 
@@ -56,9 +61,9 @@ UIButton::UIButton(const std::string& id, const std::string& label, Vec2 pos, Ve
     : UIElement(id, pos, size, anchor), m_label(label), m_onClick(onClick) {
 }
 
-void UIButton::render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) {
+void UIButton::render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) {
     if (!m_visible) return;
-    Vec2 p = getAnchoredPosition(screenWidth, screenHeight);
+    Vec2 p = getAnchoredPosition(vx, vy, vw, vh);
 
     Color bg = m_isHovered ? Color(52, 152, 219) : Color(40, 45, 60);
     renderer.draw_rect(AABB::fromCenterSize(Vec2(p.x + m_size.x * 0.5, p.y + m_size.y * 0.5), m_size), bg, true);
@@ -71,7 +76,6 @@ bool UIButton::handleMouseClick(int mx, int my) {
     (void)mx;
     (void)my;
     if (!m_visible) return false;
-    // Simple click bounds check
     if (m_onClick) {
         m_onClick();
         return true;
@@ -84,9 +88,9 @@ UIProgressBar::UIProgressBar(const std::string& id, Vec2 pos, Vec2 size, float v
     : UIElement(id, pos, size, anchor), m_progress(value), m_fillColor(fillColor) {
 }
 
-void UIProgressBar::render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) {
+void UIProgressBar::render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) {
     if (!m_visible) return;
-    Vec2 p = getAnchoredPosition(screenWidth, screenHeight);
+    Vec2 p = getAnchoredPosition(vx, vy, vw, vh);
 
     // Background Frame
     renderer.draw_rect(AABB::fromCenterSize(Vec2(p.x + m_size.x * 0.5, p.y + m_size.y * 0.5), m_size), Color(25, 30, 40), true);
@@ -184,9 +188,9 @@ void HUDSystem::update(WorldSystem::World& world, double dt) {
     }
 }
 
-void HUDSystem::renderHUD(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) {
+void HUDSystem::renderHUD(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) {
     for (auto& el : m_elements) {
-        el->render(renderer, screenWidth, screenHeight);
+        el->render(renderer, vx, vy, vw, vh);
     }
 }
 

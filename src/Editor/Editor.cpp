@@ -40,7 +40,7 @@ bool Editor::initialize(int width, int height) {
     LOG_INFO("Initializing Godot/Unity-Style Game Engine Editor (" + std::to_string(width) + "x" + std::to_string(height) + ")...");
 
     Platform::WindowProps props("Basic Game Engine - Editor & GUI", width, height);
-    if (!m_window.initialize()) {
+    if (!m_window.initialize(props)) {
         LOG_ERROR("Failed to initialize Editor Window.");
         return false;
     }
@@ -387,12 +387,14 @@ void Editor::handle_mouse_click(int mx, int my) {
         }
         return;
     }
-
-    // 3. VIEWPORT PANEL & DEBUG OVERLAY TOGGLES
     if (m_rectViewport.contains(mx, my)) {
-        // Debug Visualization Overlay & HUD Buttons in Viewport Header
+        // Debug Visualization Overlay, HUD & MAP Buttons in Viewport Header
         if (my >= 38 && my <= 58) {
-            if (mx >= 505 && mx <= 555) {
+            if (mx >= 445 && mx <= 495) {
+                m_showTilemap = !m_showTilemap;
+                LOG_INFO(m_showTilemap ? "Tilemap Overlay ON" : "Tilemap Overlay OFF");
+                return;
+            } else if (mx >= 505 && mx <= 555) {
                 m_showHUDOverlay = !m_showHUDOverlay;
                 LOG_INFO(m_showHUDOverlay ? "In-Game HUD Overlay ON" : "In-Game HUD Overlay OFF");
                 return;
@@ -701,11 +703,14 @@ void Editor::render_viewport_panel() {
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(492, 258), Vec2(564, 444)), Color(18, 20, 28), true);
     m_renderer->draw_line(Vec2(774, 36), Vec2(774, 480), Color(45, 52, 70));
 
-    // Viewport Header Bar with DebugRenderer Overlays & HUD Toggle
+    // Viewport Header Bar with DebugRenderer Overlays, HUD & Tilemap Toggles
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(492, 48), Vec2(564, 24)), Color(30, 34, 46), true);
     m_renderer->draw_text("VIEWPORT", Vec2(215, 42), Color(52, 152, 219));
 
-    // DebugRenderer & HUD Toggle Buttons
+    // DebugRenderer, HUD & MAP Toggle Buttons
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(470, 48), Vec2(45, 18)), m_showTilemap ? Color(46, 204, 113) : Color(52, 73, 94), true);
+    m_renderer->draw_text("MAP", Vec2(456, 43), Color::White);
+
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(530, 48), Vec2(50, 18)), m_showHUDOverlay ? Color(46, 204, 113) : Color(52, 73, 94), true);
     m_renderer->draw_text("HUD", Vec2(514, 43), Color::White);
 
@@ -720,6 +725,11 @@ void Editor::render_viewport_panel() {
 
     int centerX = 492;
     int centerY = 258;
+
+    // Render 2D World Tilemap
+    if (m_showTilemap) {
+        m_tilemap.render(*m_renderer, m_viewportCamera.position);
+    }
 
     for (int x = m_rectViewport.x + 20; x < m_rectViewport.x + m_rectViewport.width; x += 40) {
         m_renderer->draw_line(Vec2(x, 60), Vec2(x, 470), Color(30, 35, 48));
@@ -782,9 +792,9 @@ void Editor::render_viewport_panel() {
         }
     }
 
-    // Render In-Game UI/HUD Overlay
+    // Render In-Game UI/HUD Overlay inside Viewport Panel
     if (m_showHUDOverlay && m_hudSystem) {
-        m_hudSystem->renderHUD(*m_renderer, 1024, 640);
+        m_hudSystem->renderHUD(*m_renderer, m_rectViewport.x, m_rectViewport.y, m_rectViewport.width, m_rectViewport.height);
     }
 }
 

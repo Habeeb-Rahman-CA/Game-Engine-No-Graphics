@@ -11,6 +11,7 @@
 #include "Memory/MemoryBenchmark.hpp"
 #include "Physics/SpatialGrid.hpp"
 #include "UI/HUDSystem.hpp"
+#include "World/Tilemap.hpp"
 
 #include <memory>
 #include <string>
@@ -69,6 +70,7 @@ private:
     EventSystem::EventBus m_eventBus;
     RenderSystem::Camera2D m_viewportCamera;
     UISystem::HUDSystem* m_hudSystem = nullptr;
+    WorldSystem::Tilemap m_tilemap;
 
     // Editor State
     EditorMode m_mode = EditorMode::Edit;
@@ -76,6 +78,7 @@ private:
     bool m_hasSelection = false;
     bool m_isDraggingInViewport = false;
     bool m_showHUDOverlay = true;
+    bool m_showTilemap = true;
     int m_lastDragMx = 0;
     int m_lastDragMy = 0;
 

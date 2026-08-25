@@ -17,7 +17,10 @@ Window::~Window() {
     close();
 }
 
-bool Window::initialize() {
+bool Window::initialize(const WindowProps& props) {
+    m_props = props;
+    m_pixelBuffer.resize(m_props.width * m_props.height, 0xFF111118);
+
     LOG_INFO("Initializing Native OS Graphical Window ('" + m_props.title + "' " + 
              std::to_string(m_props.width) + "x" + std::to_string(m_props.height) + ")...");
 

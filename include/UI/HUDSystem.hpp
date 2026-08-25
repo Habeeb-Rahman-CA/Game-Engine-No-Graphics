@@ -34,10 +34,10 @@ public:
     UIElement(const std::string& id, Vec2 pos, Vec2 size, UIAnchor anchor = UIAnchor::TopLeft);
     virtual ~UIElement() = default;
 
-    virtual void render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) = 0;
+    virtual void render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) = 0;
     virtual bool handleMouseClick(int mx, int my) { (void)mx; (void)my; return false; }
 
-    Vec2 getAnchoredPosition(int screenWidth, int screenHeight) const;
+    Vec2 getAnchoredPosition(int vx, int vy, int vw, int vh) const;
 
     const std::string& getId() const { return m_id; }
     bool isVisible() const { return m_visible; }
@@ -55,7 +55,7 @@ protected:
 class UIText : public UIElement {
 public:
     UIText(const std::string& id, const std::string& text, Vec2 pos, Color col = Color::White, UIAnchor anchor = UIAnchor::TopLeft);
-    void render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) override;
+    void render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) override;
 
     void setText(const std::string& text) { m_text = text; }
     void setColor(Color color) { m_color = color; }
@@ -69,7 +69,7 @@ private:
 class UIButton : public UIElement {
 public:
     UIButton(const std::string& id, const std::string& label, Vec2 pos, Vec2 size, std::function<void()> onClick, UIAnchor anchor = UIAnchor::TopLeft);
-    void render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) override;
+    void render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) override;
     bool handleMouseClick(int mx, int my) override;
 
     void setLabel(const std::string& label) { m_label = label; }
@@ -84,7 +84,7 @@ private:
 class UIProgressBar : public UIElement {
 public:
     UIProgressBar(const std::string& id, Vec2 pos, Vec2 size, float value = 1.0f, Color fillColor = Color(46, 204, 113), UIAnchor anchor = UIAnchor::TopLeft);
-    void render(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight) override;
+    void render(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh) override;
 
     void setProgress(float val) { m_progress = std::max(0.0f, std::min(1.0f, val)); }
     void setFillColor(Color color) { m_fillColor = color; }
@@ -102,7 +102,7 @@ public:
 
     std::string getName() const override { return "HUDSystem"; }
     void update(WorldSystem::World& world, double dt) override;
-    void renderHUD(RenderSystem::GPU2DRenderer& renderer, int screenWidth, int screenHeight);
+    void renderHUD(RenderSystem::GPU2DRenderer& renderer, int vx, int vy, int vw, int vh);
 
     void addElement(std::shared_ptr<UIElement> element);
     std::shared_ptr<UIElement> getElement(const std::string& id);
