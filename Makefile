@@ -135,10 +135,30 @@ test-engine:
 	$(CXX) $(CXXFLAGS) $(TEST_SOURCES) -o $(BUILD_DIR)/engine_tests
 	./$(BUILD_DIR)/engine_tests
 
+BENCHMARK_SOURCES = benchmarks/benchmark_runner.cpp \
+                    src/World/World.cpp \
+                    src/Physics/Collision.cpp \
+                    src/System/MovementSystem.cpp \
+                    src/Memory/ArenaAllocator.cpp \
+                    src/Memory/PoolAllocator.cpp \
+                    src/Resources/Resource.cpp \
+                    src/Event/EventBus.cpp \
+                    src/Debug/Profiler.cpp \
+                    src/Debug/Logger.cpp \
+                    src/Scene/SceneSerializer.cpp
+
+benchmark:
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $(BENCHMARK_SOURCES) -o $(BUILD_DIR)/engine_benchmarks
+	./$(BUILD_DIR)/engine_benchmarks
+
+benchmark-perf: benchmark
+	perf stat ./$(BUILD_DIR)/engine_benchmarks
+
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics test-render test-camera test-sprite test-audio test-debug test-scene test-ai test-engine perf-profile clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics test-render test-camera test-sprite test-audio test-debug test-scene test-ai test-engine benchmark benchmark-perf perf-profile clean

@@ -58,6 +58,11 @@ add_executable(engine_tests
 )
 target_link_libraries(engine_tests PRIVATE EngineCore)
 
+# Benchmark Executable
+add_executable(engine_benchmarks benchmarks/benchmark_runner.cpp)
+target_link_libraries(engine_benchmarks PRIVATE EngineCore)
+
 # Target options
 target_compile_options(game_engine PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_options(engine_tests PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(engine_benchmarks PRIVATE -Wall -Wextra -Wpedantic)
