@@ -20,6 +20,7 @@ set(ENGINE_SOURCES
     src/Memory/ArenaAllocator.cpp
     src/Memory/PoolAllocator.cpp
     src/Memory/MemoryBenchmark.cpp
+    src/Resources/Resource.cpp
     src/Debug/Logger.cpp
 )
 

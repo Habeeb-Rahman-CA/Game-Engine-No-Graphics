@@ -1,0 +1,4 @@
+# Level 01 Map Definition
+level_name = Ancient Ruins
+difficulty = 3
+entities = Player,Goblin_1,Goblin_2,Boss_Dragon,Wall_North,Wall_South

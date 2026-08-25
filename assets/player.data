@@ -1,0 +1,5 @@
+# Player Entity Data File
+name = Hero
+max_hp = 150
+move_speed = 12.5
+class = Knight

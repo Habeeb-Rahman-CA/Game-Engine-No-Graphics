@@ -148,9 +148,44 @@ void runPhase6Demo() {
 }
 
 #include "Memory/MemoryBenchmark.hpp"
+#include "Resources/AssetManager.hpp"
 
 void runPhase7Demo() {
     Engine::Memory::MemoryBenchmark::runBenchmark(100000);
+}
+
+void runPhase8Demo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("       PHASE 8 DEMO: ASSET MANAGER & RESOURCE CACHING SYSTEM               ");
+    LOG_INFO("==========================================================================");
+
+    Engine::Resources::AssetManager assets;
+
+    LOG_INFO("\n--- STEP 1: INITIAL LOAD (CACHE MISS) ---");
+    auto level1 = assets.load<Engine::Resources::LevelDataResource>("assets/level01.level");
+    if (level1) {
+        LOG_INFO("Level Name: " + level1->getLevelName());
+        LOG_INFO("Difficulty: " + std::to_string(level1->getDifficulty()));
+        std::string entityList;
+        for (const auto& e : level1->getInitialEntities()) entityList += e + " ";
+        LOG_INFO("Initial Entities: " + entityList);
+    }
+
+    LOG_INFO("\n--- STEP 2: RE-REQUEST SAME ASSET (CACHE HIT DEMONSTRATION) ---");
+    auto level1_cached = assets.load<Engine::Resources::LevelDataResource>("assets/level01.level");
+    if (level1_cached == level1) {
+        LOG_INFO("SUCCESS: Verified pointers match! Returned cached asset instantly without disk I/O.");
+    }
+
+    LOG_INFO("\n--- STEP 3: LOADING GAME DATA ASSET ---");
+    auto playerData = assets.load<Engine::Resources::GameDataResource>("assets/player.data");
+    if (playerData) {
+        LOG_INFO("Player Hero Name: " + playerData->getValue("name"));
+        LOG_INFO("Player Max HP:    " + playerData->getValue("max_hp"));
+        LOG_INFO("Player Class:     " + playerData->getValue("class"));
+    }
+
+    LOG_INFO("\nTotal Cached Assets in Manager: " + std::to_string(assets.getCachedAssetCount()));
 }
 
 int main(int argc, char* argv[]) {
@@ -160,6 +195,7 @@ int main(int argc, char* argv[]) {
     bool isPhase5Demo = false;
     bool isPhase6Demo = false;
     bool isPhase7Demo = false;
+    bool isPhase8Demo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -191,6 +227,8 @@ int main(int argc, char* argv[]) {
             isPhase6Demo = true;
         } else if (std::strcmp(argv[i], "--phase7") == 0) {
             isPhase7Demo = true;
+        } else if (std::strcmp(argv[i], "--phase8") == 0) {
+            isPhase8Demo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -221,6 +259,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase7Demo) {
         runPhase7Demo();
+        return 0;
+    }
+
+    if (isPhase8Demo) {
+        runPhase8Demo();
         return 0;
     }
 
