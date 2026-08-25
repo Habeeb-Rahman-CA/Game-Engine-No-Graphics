@@ -147,12 +147,19 @@ void runPhase6Demo() {
     engine.getWorld().print_world_state();
 }
 
+#include "Memory/MemoryBenchmark.hpp"
+
+void runPhase7Demo() {
+    Engine::Memory::MemoryBenchmark::runBenchmark(100000);
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
     bool isPhase4Demo = false;
     bool isPhase5Demo = false;
     bool isPhase6Demo = false;
+    bool isPhase7Demo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -182,6 +189,8 @@ int main(int argc, char* argv[]) {
             isPhase5Demo = true;
         } else if (std::strcmp(argv[i], "--phase6") == 0) {
             isPhase6Demo = true;
+        } else if (std::strcmp(argv[i], "--phase7") == 0) {
+            isPhase7Demo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -207,6 +216,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase6Demo) {
         runPhase6Demo();
+        return 0;
+    }
+
+    if (isPhase7Demo) {
+        runPhase7Demo();
         return 0;
     }
 

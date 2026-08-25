@@ -11,6 +11,9 @@ SOURCES = main.cpp \
           src/System/MovementSystem.cpp \
           src/System/PhysicsSystem.cpp \
           src/System/GameplaySystem.cpp \
+          src/Memory/ArenaAllocator.cpp \
+          src/Memory/PoolAllocator.cpp \
+          src/Memory/MemoryBenchmark.cpp \
           src/Debug/Logger.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
@@ -46,7 +49,10 @@ test-phase5: $(TARGET)
 test-phase6: $(TARGET)
 	./$(TARGET) --phase6
 
+test-phase7: $(TARGET)
+	./$(TARGET) --phase7
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 clean
