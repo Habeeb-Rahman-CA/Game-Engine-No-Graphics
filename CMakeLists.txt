@@ -15,6 +15,8 @@ set(ENGINE_SOURCES
     src/Core/Input.cpp
     src/Input/TerminalInputBackend.cpp
     src/Input/Input.cpp
+    src/Renderer/Renderer.cpp
+    src/Renderer/TerminalCanvasRenderer.cpp
     src/State/StateManager.cpp
     src/State/ConcreteStates.cpp
     src/World/World.cpp
@@ -22,6 +24,7 @@ set(ENGINE_SOURCES
     src/System/MovementSystem.cpp
     src/System/PhysicsSystem.cpp
     src/System/GameplaySystem.cpp
+    src/System/RenderSystem.cpp
     src/Memory/ArenaAllocator.cpp
     src/Memory/PoolAllocator.cpp
     src/Memory/MemoryBenchmark.cpp

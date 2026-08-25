@@ -522,6 +522,57 @@ void runSimplePhysicsDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Renderer/Renderer.hpp"
+#include "System/RenderSystem.hpp"
+
+void runRenderDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("               DECOUPLED RENDERING ABSTRACTION DEMONSTRATION              ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::RenderSystem;
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using namespace Engine::System;
+    using namespace Engine::Math;
+
+    // 1. Initialize Decoupled Renderer Facade
+    Renderer::init(60, 15, "Decoupled Engine Canvas Window");
+
+    LOG_INFO("\n--- 1. DIRECT RENDERING FACADE CALLS ---");
+    Renderer::begin_frame();
+    Renderer::clear(Color::Black);
+    Renderer::draw_rect(AABB::fromCenterSize(Vec2(10.0, 5.0), Vec2(8.0, 4.0)), Color::Green, true);
+    Renderer::draw_circle(Circle(Vec2(35.0, 7.0), 4.0), Color::Red, true);
+    Renderer::draw_line(Vec2(0.0, 0.0), Vec2(59.0, 14.0), Color::Yellow);
+    Renderer::draw_sprite("player_hero", Vec2(48.0, 3.0), Vec2(6.0, 3.0));
+    Renderer::end_frame();
+
+    LOG_INFO("\n--- 2. ECS RENDER SYSTEM INTEGRATION ---");
+    World world;
+    world.add_system(std::make_unique<RenderSystem>());
+
+    // Player Box
+    Entity player = world.create_entity("Player_Box");
+    world.add_transform(player, Transform(Vec3(8.0, 8.0, 0.0)));
+    world.add_collider(player, Collider2D::MakeBox(Vec2(6.0, 4.0)));
+
+    // Enemy Circle
+    Entity enemy = world.create_entity("Enemy_Circle");
+    world.add_transform(enemy, Transform(Vec3(25.0, 8.0, 0.0)));
+    world.add_collider(enemy, Collider2D::MakeCircle(3.0));
+
+    // Sprite Object
+    Entity castle = world.create_entity("Castle_Sprite");
+    world.add_transform(castle, Transform(Vec3(42.0, 6.0, 0.0)));
+
+    LOG_INFO("Executing ECS RenderSystem Frame Update:");
+    world.update(0.016);
+
+    Renderer::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -537,6 +588,7 @@ int main(int argc, char* argv[]) {
     bool isStateDemo = false;
     bool isCollisionDemo = false;
     bool isPhysicsDemo = false;
+    bool isRenderDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -584,6 +636,8 @@ int main(int argc, char* argv[]) {
             isCollisionDemo = true;
         } else if (std::strcmp(argv[i], "--physics") == 0) {
             isPhysicsDemo = true;
+        } else if (std::strcmp(argv[i], "--render") == 0) {
+            isRenderDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -654,6 +708,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhysicsDemo) {
         runSimplePhysicsDemo();
+        return 0;
+    }
+
+    if (isRenderDemo) {
+        runRenderDemo();
         return 0;
     }
 

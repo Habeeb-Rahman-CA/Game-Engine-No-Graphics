@@ -9,6 +9,8 @@ SOURCES = main.cpp \
           src/Core/Input.cpp \
           src/Input/TerminalInputBackend.cpp \
           src/Input/Input.cpp \
+          src/Renderer/Renderer.cpp \
+          src/Renderer/TerminalCanvasRenderer.cpp \
           src/State/StateManager.cpp \
           src/State/ConcreteStates.cpp \
           src/World/World.cpp \
@@ -16,6 +18,7 @@ SOURCES = main.cpp \
           src/System/MovementSystem.cpp \
           src/System/PhysicsSystem.cpp \
           src/System/GameplaySystem.cpp \
+          src/System/RenderSystem.cpp \
           src/Memory/ArenaAllocator.cpp \
           src/Memory/PoolAllocator.cpp \
           src/Memory/MemoryBenchmark.cpp \
@@ -84,10 +87,13 @@ test-collision: $(TARGET)
 test-physics: $(TARGET)
 	./$(TARGET) --physics
 
+test-render: $(TARGET)
+	./$(TARGET) --render
+
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics perf-profile clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics test-render perf-profile clean
