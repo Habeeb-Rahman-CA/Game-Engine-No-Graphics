@@ -15,6 +15,7 @@ SOURCES = main.cpp \
           src/Memory/PoolAllocator.cpp \
           src/Memory/MemoryBenchmark.cpp \
           src/Resources/Resource.cpp \
+          src/Event/EventBus.cpp \
           src/Debug/Logger.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
@@ -56,7 +57,10 @@ test-phase7: $(TARGET)
 test-phase8: $(TARGET)
 	./$(TARGET) --phase8
 
+test-phase9: $(TARGET)
+	./$(TARGET) --phase9
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 clean

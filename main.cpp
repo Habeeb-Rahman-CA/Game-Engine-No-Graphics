@@ -188,6 +188,57 @@ void runPhase8Demo() {
     LOG_INFO("\nTotal Cached Assets in Manager: " + std::to_string(assets.getCachedAssetCount()));
 }
 
+#include "Event/EventBus.hpp"
+
+void runPhase9Demo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("       PHASE 9 DEMO: DECOUPLED EVENT BUS & EVENT QUEUE SYSTEM             ");
+    LOG_INFO("==========================================================================");
+
+    Engine::EventSystem::EventBus bus;
+
+    LOG_INFO("\n--- STEP 1: REGISTERING EVENT SUBSCRIBERS ---");
+    bus.subscribe<Engine::EventSystem::KeyboardEvent>([](const auto& e) {
+        LOG_INFO("[Listener -> Input] Keyboard Input Received: Key '" + std::string(1, e.key) + 
+                 "' (" + (e.isPressed ? "PRESSED" : "RELEASED") + ")");
+    });
+
+    bus.subscribe<Engine::EventSystem::CollisionEvent>([](const auto& e) {
+        LOG_INFO("[Listener -> Physics] Collision Detected! Entity [" + std::to_string(e.entityA) + 
+                 "] hit Entity [" + std::to_string(e.entityB) + "] at pos " + e.hitPoint.toString());
+    });
+
+    bus.subscribe<Engine::EventSystem::EntityCreatedEvent>([](const auto& e) {
+        LOG_INFO("[Listener -> World] Entity Spawned: ID " + std::to_string(e.entityId) + 
+                 " ('" + e.entityName + "')");
+    });
+
+    bus.subscribe<Engine::EventSystem::EntityDestroyedEvent>([](const auto& e) {
+        LOG_INFO("[Listener -> World] Entity Destroyed: ID " + std::to_string(e.entityId));
+    });
+
+    bus.subscribe<Engine::EventSystem::GameOverEvent>([](const auto& e) {
+        LOG_WARN("[Listener -> Gameplay] GAME OVER! Reason: '" + e.reason + 
+                 "', Final Score: " + std::to_string(e.finalScore));
+    });
+
+    LOG_INFO("\n--- STEP 2: IMMEDIATE EVENT PUBLISHING (publish) ---");
+    bus.publish(Engine::EventSystem::EntityCreatedEvent(1, "PlayerHero"));
+    bus.publish(Engine::EventSystem::KeyboardEvent('W', true));
+    bus.publish(Engine::EventSystem::CollisionEvent(1, 3, Engine::Math::Vec3(100.0, 0.0, 0.0)));
+
+    LOG_INFO("\n--- STEP 3: QUEUED EVENT DEFERRED PROCESSING (enqueue -> dispatchEvents) ---");
+    LOG_INFO("Enqueuing events into Event Queue...");
+    bus.enqueue(std::make_unique<Engine::EventSystem::KeyboardEvent>(' ', true));
+    bus.enqueue(std::make_unique<Engine::EventSystem::EntityDestroyedEvent>(1));
+    bus.enqueue(std::make_unique<Engine::EventSystem::GameOverEvent>("Player destroyed in collision", 8500));
+
+    LOG_INFO("Current Queue Size: " + std::to_string(bus.getQueueSize()) + " events pending");
+    LOG_INFO("Flushing & Dispatching Event Queue during engine tick...");
+    bus.dispatchEvents();
+    LOG_INFO("Queue Size after dispatch: " + std::to_string(bus.getQueueSize()) + " events");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -196,6 +247,7 @@ int main(int argc, char* argv[]) {
     bool isPhase6Demo = false;
     bool isPhase7Demo = false;
     bool isPhase8Demo = false;
+    bool isPhase9Demo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -229,6 +281,8 @@ int main(int argc, char* argv[]) {
             isPhase7Demo = true;
         } else if (std::strcmp(argv[i], "--phase8") == 0) {
             isPhase8Demo = true;
+        } else if (std::strcmp(argv[i], "--phase9") == 0) {
+            isPhase9Demo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -264,6 +318,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase8Demo) {
         runPhase8Demo();
+        return 0;
+    }
+
+    if (isPhase9Demo) {
+        runPhase9Demo();
         return 0;
     }
 

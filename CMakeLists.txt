@@ -21,6 +21,7 @@ set(ENGINE_SOURCES
     src/Memory/PoolAllocator.cpp
     src/Memory/MemoryBenchmark.cpp
     src/Resources/Resource.cpp
+    src/Event/EventBus.cpp
     src/Debug/Logger.cpp
 )
 
