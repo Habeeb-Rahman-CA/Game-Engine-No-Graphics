@@ -328,6 +328,41 @@ void runMathDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Input/Input.hpp"
+#include "Input/TerminalInputBackend.hpp"
+
+void runInputDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("              DECOUPLED INPUT SYSTEM FACADE DEMONSTRATION                 ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::InputSystem;
+
+    Input::init();
+
+    LOG_INFO("\n--- 1. TESTING DECOUPLED KEYBOARD API (Input::is_key_*) ---");
+    LOG_INFO("Checking Key::W down: " + std::string(Input::is_key_down(Key::W) ? "YES" : "NO"));
+    LOG_INFO("Checking Key::Space pressed: " + std::string(Input::is_key_pressed(Key::Space) ? "YES" : "NO"));
+    LOG_INFO("Checking Key::Escape released: " + std::string(Input::is_key_released(Key::Escape) ? "YES" : "NO"));
+
+    LOG_INFO("\n--- 2. TESTING DECOUPLED MOUSE API (Input::mouse_*) ---");
+    TerminalInputBackend* backend = dynamic_cast<TerminalInputBackend*>(Input::getBackend());
+    if (backend) {
+        backend->simulateMousePosition(120.5, 450.0);
+        backend->simulateMouseButton(MouseButton::Left, true);
+    }
+
+    Input::update(); // Update input state cycle
+
+    LOG_INFO("Mouse Position: " + Input::mouse_position().toString());
+    LOG_INFO("Mouse Delta:    " + Input::mouse_delta().toString());
+    LOG_INFO("Mouse Left Button Down: " + std::string(Input::is_mouse_button_down(MouseButton::Left) ? "YES" : "NO"));
+    LOG_INFO("Mouse Right Button Down: " + std::string(Input::is_mouse_button_down(MouseButton::Right) ? "YES" : "NO"));
+
+    Input::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -339,6 +374,7 @@ int main(int argc, char* argv[]) {
     bool isPhase9Demo = false;
     bool isProfilerDemo = false;
     bool isMathDemo = false;
+    bool isInputDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -378,6 +414,8 @@ int main(int argc, char* argv[]) {
             isProfilerDemo = true;
         } else if (std::strcmp(argv[i], "--math") == 0) {
             isMathDemo = true;
+        } else if (std::strcmp(argv[i], "--input") == 0) {
+            isInputDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -428,6 +466,11 @@ int main(int argc, char* argv[]) {
 
     if (isMathDemo) {
         runMathDemo();
+        return 0;
+    }
+
+    if (isInputDemo) {
+        runInputDemo();
         return 0;
     }
 

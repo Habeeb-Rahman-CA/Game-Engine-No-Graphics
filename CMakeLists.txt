@@ -13,6 +13,8 @@ set(ENGINE_SOURCES
     src/Core/Engine.cpp
     src/Core/Time.cpp
     src/Core/Input.cpp
+    src/Input/TerminalInputBackend.cpp
+    src/Input/Input.cpp
     src/World/World.cpp
     src/System/MovementSystem.cpp
     src/System/PhysicsSystem.cpp
