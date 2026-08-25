@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "System/ISystem.hpp"
+
 namespace Engine {
 namespace WorldSystem {
 
@@ -16,6 +18,7 @@ using Transform = EntitySystem::Transform;
 using Velocity = EntitySystem::Velocity;
 using Health = EntitySystem::Health;
 using NameTag = EntitySystem::NameTag;
+using ISystem = Engine::System::ISystem;
 
 class World {
 public:
@@ -42,7 +45,10 @@ public:
     bool has_velocity(Entity e) const;
     bool has_health(Entity e) const;
 
-    // World Systems
+    // System Pipeline Management
+    void add_system(std::unique_ptr<ISystem> system);
+
+    // World Systems Execution
     void update(double dt);
     void print_world_state() const;
 
@@ -55,6 +61,9 @@ private:
     std::unordered_map<Entity, Velocity> m_velocities;
     std::unordered_map<Entity, Health> m_healths;
     std::unordered_map<Entity, NameTag> m_names;
+
+    // Registered Systems Pipeline
+    std::vector<std::unique_ptr<ISystem>> m_systems;
 };
 
 } // namespace WorldSystem

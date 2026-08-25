@@ -104,11 +104,55 @@ void runPhase5Demo() {
     engine.getWorld().print_world_state();
 }
 
+#include "System/MovementSystem.hpp"
+#include "System/PhysicsSystem.hpp"
+#include "System/GameplaySystem.hpp"
+
+void runPhase6Demo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("       PHASE 6 DEMO: DATA-ORIENTED SYSTEM PIPELINE EXECUTION              ");
+    LOG_INFO("==========================================================================");
+
+    Engine::Core::EngineConfig config;
+    config.targetFps = 60.0;
+    config.fixedDeltaTime = 1.0 / 60.0;
+    config.maxFramesToRun = 3;
+    config.showStats = false;
+
+    Engine::Core::Engine engine(config);
+    engine.initialize();
+
+    // Register systems into World pipeline sequence
+    LOG_INFO("\n--- REGISTERING SYSTEMS PIPELINE ---");
+    engine.getWorld().add_system(std::make_unique<Engine::System::MovementSystem>());
+    engine.getWorld().add_system(std::make_unique<Engine::System::PhysicsSystem>());
+    engine.getWorld().add_system(std::make_unique<Engine::System::GameplaySystem>());
+
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using Vec3 = ::Engine::Math::Vec3;
+
+    // Create a high-speed bullet aimed at the wall
+    Entity bullet = engine.getWorld().create_entity("SniperBullet");
+    engine.getWorld().add_transform(bullet, Transform(Vec3(90.0, 0.0, 0.0)));
+    engine.getWorld().add_velocity(bullet, Velocity(Vec3(300.0, 0.0, 0.0))); // Travels 300 units/s
+
+    LOG_INFO("\n=== INITIAL WORLD ENTITY STATES ===");
+    engine.getWorld().print_world_state();
+
+    LOG_INFO("\n=== RUNNING SYSTEM PIPELINE FOR 3 TICKS ===");
+    engine.run();
+
+    LOG_INFO("\n=== FINAL WORLD ENTITY STATES ===");
+    engine.getWorld().print_world_state();
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
     bool isPhase4Demo = false;
     bool isPhase5Demo = false;
+    bool isPhase6Demo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -136,6 +180,8 @@ int main(int argc, char* argv[]) {
             isPhase4Demo = true;
         } else if (std::strcmp(argv[i], "--phase5") == 0) {
             isPhase5Demo = true;
+        } else if (std::strcmp(argv[i], "--phase6") == 0) {
+            isPhase6Demo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -156,6 +202,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase5Demo) {
         runPhase5Demo();
+        return 0;
+    }
+
+    if (isPhase6Demo) {
+        runPhase6Demo();
         return 0;
     }
 

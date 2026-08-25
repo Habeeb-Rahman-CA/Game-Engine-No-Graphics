@@ -14,6 +14,9 @@ set(ENGINE_SOURCES
     src/Core/Time.cpp
     src/Core/Input.cpp
     src/World/World.cpp
+    src/System/MovementSystem.cpp
+    src/System/PhysicsSystem.cpp
+    src/System/GameplaySystem.cpp
     src/Debug/Logger.cpp
 )
 

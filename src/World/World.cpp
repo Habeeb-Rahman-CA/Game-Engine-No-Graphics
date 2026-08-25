@@ -74,14 +74,28 @@ bool World::has_health(Entity e) const {
     return m_healths.find(e) != m_healths.end();
 }
 
-void World::update(double dt) {
-    // Movement System: Update position for entities with both Transform and Velocity
-    for (Entity e : m_entities) {
-        Transform* transform = get_transform(e);
-        Velocity* velocity = get_velocity(e);
+#include "System/ISystem.hpp"
 
-        if (transform && velocity) {
-            transform->position += velocity->value * dt;
+void World::add_system(std::unique_ptr<ISystem> system) {
+    LOG_INFO("Registered System: " + system->getName());
+    m_systems.push_back(std::move(system));
+}
+
+void World::update(double dt) {
+    // If specific systems are registered, update them sequentially
+    if (!m_systems.empty()) {
+        for (auto& system : m_systems) {
+            system->update(*this, dt);
+        }
+    } else {
+        // Default Movement System: Update position for entities with both Transform and Velocity
+        for (Entity e : m_entities) {
+            Transform* transform = get_transform(e);
+            Velocity* velocity = get_velocity(e);
+
+            if (transform && velocity) {
+                transform->position += velocity->value * dt;
+            }
         }
     }
 }
