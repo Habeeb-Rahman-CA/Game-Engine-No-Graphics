@@ -25,6 +25,8 @@ void World::destroy_entity(Entity entity) {
         m_entities.erase(it);
         m_transforms.erase(entity);
         m_velocities.erase(entity);
+        m_accelerations.erase(entity);
+        m_rigidbodies.erase(entity);
         m_healths.erase(entity);
         m_colliders.erase(entity);
         m_names.erase(entity);
@@ -38,6 +40,14 @@ void World::add_transform(Entity e, const Transform& t) {
 
 void World::add_velocity(Entity e, const Velocity& v) {
     m_velocities[e] = v;
+}
+
+void World::add_acceleration(Entity e, const Acceleration& a) {
+    m_accelerations[e] = a;
+}
+
+void World::add_rigidbody(Entity e, const RigidBody2D& rb) {
+    m_rigidbodies[e] = rb;
 }
 
 void World::add_health(Entity e, const Health& h) {
@@ -56,6 +66,16 @@ Transform* World::get_transform(Entity e) {
 Velocity* World::get_velocity(Entity e) {
     auto it = m_velocities.find(e);
     return (it != m_velocities.end()) ? &it->second : nullptr;
+}
+
+Acceleration* World::get_acceleration(Entity e) {
+    auto it = m_accelerations.find(e);
+    return (it != m_accelerations.end()) ? &it->second : nullptr;
+}
+
+RigidBody2D* World::get_rigidbody(Entity e) {
+    auto it = m_rigidbodies.find(e);
+    return (it != m_rigidbodies.end()) ? &it->second : nullptr;
 }
 
 Health* World::get_health(Entity e) {
@@ -79,6 +99,14 @@ bool World::has_transform(Entity e) const {
 
 bool World::has_velocity(Entity e) const {
     return m_velocities.find(e) != m_velocities.end();
+}
+
+bool World::has_acceleration(Entity e) const {
+    return m_accelerations.find(e) != m_accelerations.end();
+}
+
+bool World::has_rigidbody(Entity e) const {
+    return m_rigidbodies.find(e) != m_rigidbodies.end();
 }
 
 bool World::has_health(Entity e) const {

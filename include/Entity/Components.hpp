@@ -29,6 +29,23 @@ struct Velocity {
     Velocity(Vec3 vel = Vec3(0.0, 0.0, 0.0)) : value(vel) {}
 };
 
+struct Acceleration {
+    Vec3 value;
+
+    Acceleration(Vec3 acc = Vec3(0.0, 0.0, 0.0)) : value(acc) {}
+};
+
+struct RigidBody2D {
+    bool useGravity = true;
+    double gravityScale = 1.0;
+    double drag = 0.05;         // Linear air resistance damping
+    double restitution = 0.75;  // Bounciness elasticity (0 = no bounce, 1 = perfectly elastic)
+    bool isGrounded = false;
+
+    RigidBody2D(bool gravity = true, double scale = 1.0, double d = 0.05, double rest = 0.75)
+        : useGravity(gravity), gravityScale(scale), drag(d), restitution(rest), isGrounded(false) {}
+};
+
 struct Health {
     int value = 100;
 

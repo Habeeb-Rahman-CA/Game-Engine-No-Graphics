@@ -16,6 +16,8 @@ namespace WorldSystem {
 using Entity = EntitySystem::Entity;
 using Transform = EntitySystem::Transform;
 using Velocity = EntitySystem::Velocity;
+using Acceleration = EntitySystem::Acceleration;
+using RigidBody2D = EntitySystem::RigidBody2D;
 using Health = EntitySystem::Health;
 using NameTag = EntitySystem::NameTag;
 using Collider2D = EntitySystem::Collider2D;
@@ -35,17 +37,23 @@ public:
     // Component Management
     void add_transform(Entity e, const Transform& t);
     void add_velocity(Entity e, const Velocity& v);
+    void add_acceleration(Entity e, const Acceleration& a);
+    void add_rigidbody(Entity e, const RigidBody2D& rb);
     void add_health(Entity e, const Health& h);
     void add_collider(Entity e, const Collider2D& c);
 
     Transform* get_transform(Entity e);
     Velocity* get_velocity(Entity e);
+    Acceleration* get_acceleration(Entity e);
+    RigidBody2D* get_rigidbody(Entity e);
     Health* get_health(Entity e);
     Collider2D* get_collider(Entity e);
     std::string get_name(Entity e) const;
 
     bool has_transform(Entity e) const;
     bool has_velocity(Entity e) const;
+    bool has_acceleration(Entity e) const;
+    bool has_rigidbody(Entity e) const;
     bool has_health(Entity e) const;
     bool has_collider(Entity e) const;
 
@@ -63,6 +71,8 @@ private:
     // Simple Component Storage
     std::unordered_map<Entity, Transform> m_transforms;
     std::unordered_map<Entity, Velocity> m_velocities;
+    std::unordered_map<Entity, Acceleration> m_accelerations;
+    std::unordered_map<Entity, RigidBody2D> m_rigidbodies;
     std::unordered_map<Entity, Health> m_healths;
     std::unordered_map<Entity, Collider2D> m_colliders;
     std::unordered_map<Entity, NameTag> m_names;

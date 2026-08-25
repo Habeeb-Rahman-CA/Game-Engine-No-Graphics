@@ -463,6 +463,65 @@ void runCollisionDemo() {
     LOG_INFO("==========================================================================");
 }
 
+void runSimplePhysicsDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   SIMPLE EULER PHYSICS DEMONSTRATION                     ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using namespace Engine::System;
+    using namespace Engine::Math;
+
+    World world;
+    world.add_system(std::make_unique<MovementSystem>());
+
+    // 1. JUMPING PLAYER
+    Entity player = world.create_entity("Jumping_Player");
+    world.add_transform(player, Transform(Vec3(0.0, 0.0, 0.0)));
+    world.add_velocity(player, Velocity(Vec3(0.0, 15.0, 0.0))); // Initial upward jump impulse
+    world.add_rigidbody(player, RigidBody2D(true, 1.0, 0.01, 0.0)); // Gravity active, no bounce
+
+    // 2. BOUNCING BALL
+    Entity ball = world.create_entity("Bouncing_Ball");
+    world.add_transform(ball, Transform(Vec3(10.0, 20.0, 0.0))); // Dropped from Y=20
+    world.add_velocity(ball, Velocity(Vec3(0.0, 0.0, 0.0)));
+    world.add_rigidbody(ball, RigidBody2D(true, 1.0, 0.0, 0.8)); // Gravity active, 80% bounciness
+
+    // 3. PROJECTILE
+    Entity bullet = world.create_entity("Bullet_Projectile");
+    world.add_transform(bullet, Transform(Vec3(0.0, 5.0, 0.0)));
+    world.add_velocity(bullet, Velocity(Vec3(30.0, 2.0, 0.0))); // High X velocity, slight Y velocity
+    world.add_rigidbody(bullet, RigidBody2D(true, 0.2, 0.0, 0.0)); // Low gravity scale
+
+    // 4. MOVING ENEMY
+    Entity enemy = world.create_entity("Patrol_Enemy");
+    world.add_transform(enemy, Transform(Vec3(50.0, 0.0, 0.0)));
+    world.add_velocity(enemy, Velocity(Vec3(-5.0, 0.0, 0.0)));
+    world.add_acceleration(enemy, Acceleration(Vec3(-1.0, 0.0, 0.0))); // Accelerating leftwards
+
+    LOG_INFO("\n--- SIMULATING EULER PHYSICS OVER 5 STEPS (dt = 0.5s) ---");
+    for (int step = 1; step <= 5; ++step) {
+        world.update(0.5);
+
+        LOG_INFO("\n--- Step " + std::to_string(step) + " (Time = " + std::to_string(step * 0.5) + "s) ---");
+        LOG_INFO("Player   - Pos: " + world.get_transform(player)->position.toString() + 
+                 " | Vel: " + world.get_velocity(player)->value.toString() + 
+                 " | Grounded: " + (world.get_rigidbody(player)->isGrounded ? "YES" : "NO"));
+
+        LOG_INFO("Bouncing Ball - Pos: " + world.get_transform(ball)->position.toString() + 
+                 " | Vel: " + world.get_velocity(ball)->value.toString());
+
+        LOG_INFO("Projectile    - Pos: " + world.get_transform(bullet)->position.toString() + 
+                 " | Vel: " + world.get_velocity(bullet)->value.toString());
+
+        LOG_INFO("Moving Enemy  - Pos: " + world.get_transform(enemy)->position.toString() + 
+                 " | Vel: " + world.get_velocity(enemy)->value.toString());
+    }
+
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -477,6 +536,7 @@ int main(int argc, char* argv[]) {
     bool isInputDemo = false;
     bool isStateDemo = false;
     bool isCollisionDemo = false;
+    bool isPhysicsDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -522,6 +582,8 @@ int main(int argc, char* argv[]) {
             isStateDemo = true;
         } else if (std::strcmp(argv[i], "--collision") == 0) {
             isCollisionDemo = true;
+        } else if (std::strcmp(argv[i], "--physics") == 0) {
+            isPhysicsDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -587,6 +649,11 @@ int main(int argc, char* argv[]) {
 
     if (isCollisionDemo) {
         runCollisionDemo();
+        return 0;
+    }
+
+    if (isPhysicsDemo) {
+        runSimplePhysicsDemo();
         return 0;
     }
 
