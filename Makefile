@@ -181,6 +181,45 @@ benchmark-perf: benchmark
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
+DUNGEON_SOURCES = DungeonGame/src/main.cpp \
+                  src/Core/Engine.cpp \
+                  src/Core/Time.cpp \
+                  src/Core/Input.cpp \
+                  src/Input/TerminalInputBackend.cpp \
+                  src/Input/Input.cpp \
+                  src/Renderer/Renderer.cpp \
+                  src/Renderer/TerminalCanvasRenderer.cpp \
+                  src/Audio/Audio.cpp \
+                  src/State/StateManager.cpp \
+                  src/State/ConcreteStates.cpp \
+                  src/World/World.cpp \
+                  src/Physics/Collision.cpp \
+                  src/System/MovementSystem.cpp \
+                  src/System/PhysicsSystem.cpp \
+                  src/System/GameplaySystem.cpp \
+                  src/System/RenderSystem.cpp \
+                  src/System/AnimationSystem.cpp \
+                  src/System/AISystem.cpp \
+                  src/Memory/ArenaAllocator.cpp \
+                  src/Memory/PoolAllocator.cpp \
+                  src/Memory/MemoryBenchmark.cpp \
+                  src/Resources/Resource.cpp \
+                  src/Event/EventBus.cpp \
+                  src/Debug/Profiler.cpp \
+                  src/Debug/Logger.cpp \
+                  src/Debug/DebugRenderer.cpp \
+                  src/Scene/SceneSerializer.cpp \
+                  src/Platform/FileSystem.cpp \
+                  src/Platform/Window.cpp \
+                  src/Platform/Platform.cpp \
+                  src/Renderer/WindowCanvasRenderer.cpp \
+                  src/Renderer/GPU2DRenderer.cpp
+
+run-dungeon-game:
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $(DUNGEON_SOURCES) $(LDFLAGS) -o $(BUILD_DIR)/dungeon_game
+	./$(BUILD_DIR)/dungeon_game
+
 clean:
 	rm -rf $(BUILD_DIR)
 
