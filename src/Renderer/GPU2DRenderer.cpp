@@ -1,4 +1,4 @@
-#include "Renderer/WindowCanvasRenderer.hpp"
+#include "Renderer/GPU2DRenderer.hpp"
 #include "Debug/Logger.hpp"
 #include <cmath>
 #include <algorithm>
@@ -6,7 +6,7 @@
 namespace Engine {
 namespace RenderSystem {
 
-WindowCanvasRenderer::WindowCanvasRenderer(Platform::Window* window)
+GPU2DRenderer::GPU2DRenderer(Platform::Window* window)
     : m_window(window), m_width(800), m_height(600) {
     if (window) {
         m_width = window->get_width();
@@ -14,33 +14,33 @@ WindowCanvasRenderer::WindowCanvasRenderer(Platform::Window* window)
     }
 }
 
-uint32_t WindowCanvasRenderer::colorToHex(const Color& c) {
+uint32_t GPU2DRenderer::colorToHex(const Color& c) {
     uint32_t r = static_cast<uint32_t>(c.r * 255.0f);
     uint32_t g = static_cast<uint32_t>(c.g * 255.0f);
     uint32_t b = static_cast<uint32_t>(c.b * 255.0f);
     return (r << 16) | (g << 8) | b;
 }
 
-bool WindowCanvasRenderer::init(int width, int height, const std::string& title) {
+bool GPU2DRenderer::init(int width, int height, const std::string& title) {
     m_width = width;
     m_height = height;
-    LOG_INFO("WindowCanvasRenderer Backend Initialized (" + title + ")");
+    LOG_INFO("GPU2DRenderer Pipeline Backend Initialized (" + title + ")");
     return true;
 }
 
-void WindowCanvasRenderer::begin_frame() {
+void GPU2DRenderer::begin_frame() {
     if (m_window) {
-        m_window->clear_buffer(0xFF111118); // Dark BG
+        m_window->clear_buffer(0xFF111118);
     }
 }
 
-void WindowCanvasRenderer::clear(const Color& color) {
+void GPU2DRenderer::clear(const Color& color) {
     if (m_window) {
         m_window->clear_buffer(colorToHex(color));
     }
 }
 
-void WindowCanvasRenderer::draw_rect(const Math::AABB& rect, const Color& color, bool fill) {
+void GPU2DRenderer::draw_rect(const Math::AABB& rect, const Color& color, bool fill) {
     if (!m_window) return;
 
     uint32_t hexColor = colorToHex(color);
@@ -67,7 +67,7 @@ void WindowCanvasRenderer::draw_rect(const Math::AABB& rect, const Color& color,
     }
 }
 
-void WindowCanvasRenderer::draw_circle(const Math::Circle& circle, const Color& color, bool fill) {
+void GPU2DRenderer::draw_circle(const Math::Circle& circle, const Color& color, bool fill) {
     if (!m_window) return;
 
     uint32_t hexColor = colorToHex(color);
@@ -91,7 +91,7 @@ void WindowCanvasRenderer::draw_circle(const Math::Circle& circle, const Color& 
     }
 }
 
-void WindowCanvasRenderer::draw_line(const Math::Vec2& start, const Math::Vec2& end, const Color& color) {
+void GPU2DRenderer::draw_line(const Math::Vec2& start, const Math::Vec2& end, const Color& color) {
     if (!m_window) return;
 
     uint32_t hexColor = colorToHex(color);
@@ -115,13 +115,13 @@ void WindowCanvasRenderer::draw_line(const Math::Vec2& start, const Math::Vec2& 
     }
 }
 
-void WindowCanvasRenderer::draw_sprite(const std::string& textureId, const Math::Vec2& position, const Math::Vec2& size) {
+void GPU2DRenderer::draw_sprite(const std::string& textureId, const Math::Vec2& position, const Math::Vec2& size) {
     (void)textureId;
     Math::AABB box = Math::AABB::fromCenterSize(position, size);
     draw_rect(box, Color::Green, true);
 }
 
-void WindowCanvasRenderer::draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale) {
+void GPU2DRenderer::draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale) {
     if (!m_window) return;
     int charWidth = static_cast<int>(8 * scale);
     int px = static_cast<int>(position.x);
@@ -133,14 +133,14 @@ void WindowCanvasRenderer::draw_text(const std::string& text, const Math::Vec2& 
     }
 }
 
-void WindowCanvasRenderer::end_frame() {
+void GPU2DRenderer::end_frame() {
     if (m_window) {
         m_window->swap_buffers();
     }
 }
 
-void WindowCanvasRenderer::shutdown() {
-    LOG_INFO("WindowCanvasRenderer Shutdown.");
+void GPU2DRenderer::shutdown() {
+    LOG_INFO("GPU2DRenderer Backend Shutdown.");
 }
 
 } // namespace RenderSystem

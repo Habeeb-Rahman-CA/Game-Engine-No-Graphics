@@ -901,6 +901,47 @@ void runWindowDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Renderer/GPU2DRenderer.hpp"
+
+void runGPU2DRendererDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   GPU 2D RENDERER PIPELINE DEMO                          ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine;
+    using namespace Engine::RenderSystem;
+
+    Platform::WindowProps props("Engine GPU 2D Renderer Pipeline", 800, 600);
+    if (!Platform::Platform::getInstance().initialize(props)) {
+        LOG_ERROR("Failed to initialize Platform!");
+        return;
+    }
+
+    Platform::Window* window = Platform::Platform::getInstance().getWindow();
+    auto gpuRenderer = std::make_unique<GPU2DRenderer>(window);
+    Renderer::setBackend(std::move(gpuRenderer));
+
+    LOG_INFO("\n--- DISPATCHING 2D GPU RENDERING COMMANDS ---");
+    for (int frame = 0; frame < 5; ++frame) {
+        LOG_INFO("[GPU FRAME " + std::to_string(frame + 1) + "] Rendering primitives, sprites & text...");
+        Renderer::begin_frame();
+        Renderer::clear(Color(0.08f, 0.08f, 0.12f, 1.0f));
+
+        // Draw Rectangles, Circles, Lines, Sprites & Text via GPU2DRenderer Pipeline
+        Renderer::draw_rect(Math::AABB(Math::Vec2(150, 150), Math::Vec2(300, 300)), Color::Magenta, true);
+        Renderer::draw_circle(Math::Circle(Math::Vec2(500, 300), 65), Color::Cyan, false);
+        Renderer::draw_line(Math::Vec2(100, 500), Math::Vec2(700, 500), Color::Green);
+        Renderer::draw_sprite("hero_walk.png", Math::Vec2(400, 200), Math::Vec2(64, 64));
+        Renderer::draw_text("GPU 2D RENDERER READY", Math::Vec2(250, 50), Color::Yellow, 1.5f);
+
+        Renderer::end_frame();
+        Platform::Platform::getInstance().update();
+    }
+
+    Platform::Platform::getInstance().shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -924,6 +965,7 @@ int main(int argc, char* argv[]) {
     bool isSceneDemo = false;
     bool isAIDemo = false;
     bool isWindowDemo = false;
+    bool isGPUDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -987,12 +1029,19 @@ int main(int argc, char* argv[]) {
             isAIDemo = true;
         } else if (std::strcmp(argv[i], "--window") == 0) {
             isWindowDemo = true;
+        } else if (std::strcmp(argv[i], "--gpu") == 0) {
+            isGPUDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
             printHelp(argv[0]);
             return 0;
         }
+    }
+
+    if (isGPUDemo) {
+        runGPU2DRendererDemo();
+        return 0;
     }
 
     if (isWindowDemo) {

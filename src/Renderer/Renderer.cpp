@@ -85,6 +85,16 @@ void Renderer::draw_sprite(const std::string& textureId, const Math::Vec2& posit
     }
 }
 
+void Renderer::draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale) {
+    if (!s_backend) return;
+    if (s_activeCamera) {
+        Math::Vec2 screenPos = s_activeCamera->worldToScreen(position);
+        s_backend->draw_text(text, screenPos, color, scale);
+    } else {
+        s_backend->draw_text(text, position, color, scale);
+    }
+}
+
 void Renderer::end_frame() {
     if (s_backend) s_backend->end_frame();
 }

@@ -19,6 +19,7 @@ public:
     void draw_circle(const Math::Circle& circle, const Color& color, bool fill) override;
     void draw_line(const Math::Vec2& start, const Math::Vec2& end, const Color& color) override;
     void draw_sprite(const std::string& textureId, const Math::Vec2& position, const Math::Vec2& size) override;
+    void draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale = 1.0f) override;
     void end_frame() override;
     void shutdown() override;
 

@@ -21,6 +21,7 @@ public:
     virtual void draw_circle(const Math::Circle& circle, const Color& color, bool fill = true) = 0;
     virtual void draw_line(const Math::Vec2& start, const Math::Vec2& end, const Color& color) = 0;
     virtual void draw_sprite(const std::string& textureId, const Math::Vec2& position, const Math::Vec2& size) = 0;
+    virtual void draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale = 1.0f) = 0;
 
     virtual void end_frame() = 0;
     virtual void shutdown() = 0;

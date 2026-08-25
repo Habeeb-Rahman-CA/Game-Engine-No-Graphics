@@ -41,6 +41,7 @@ set(ENGINE_SOURCES
     src/Platform/Window.cpp
     src/Platform/Platform.cpp
     src/Renderer/WindowCanvasRenderer.cpp
+    src/Renderer/GPU2DRenderer.cpp
 )
 
 # Find & Link X11

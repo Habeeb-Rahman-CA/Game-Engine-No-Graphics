@@ -24,6 +24,7 @@ public:
     static void draw_circle(const Math::Circle& circle, const Color& color = Color::White, bool fill = true);
     static void draw_line(const Math::Vec2& start, const Math::Vec2& end, const Color& color = Color::White);
     static void draw_sprite(const std::string& textureId, const Math::Vec2& position, const Math::Vec2& size);
+    static void draw_text(const std::string& text, const Math::Vec2& position, const Color& color = Color::White, float scale = 1.0f);
 
     static void end_frame();
     static void shutdown();

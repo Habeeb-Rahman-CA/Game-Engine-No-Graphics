@@ -101,6 +101,17 @@ void TerminalCanvasRenderer::draw_sprite(const std::string& textureId, const Mat
     }
 }
 
+void TerminalCanvasRenderer::draw_text(const std::string& text, const Math::Vec2& position, const Color& color, float scale) {
+    (void)color;
+    (void)scale;
+    int px = static_cast<int>(position.x);
+    int py = static_cast<int>(position.y);
+
+    for (size_t i = 0; i < text.size(); ++i) {
+        setPixel(px + static_cast<int>(i), py, text[i]);
+    }
+}
+
 void TerminalCanvasRenderer::end_frame() {
     std::cout << "\033[H"; // Move cursor to top-left of terminal
     std::cout << "+" << std::string(m_width, '-') << "+\n";

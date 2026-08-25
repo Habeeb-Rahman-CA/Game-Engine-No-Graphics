@@ -1,16 +1,17 @@
-#ifndef RENDERER_TERMINALCANVASRENDERER_HPP
-#define RENDERER_TERMINALCANVASRENDERER_HPP
+#ifndef RENDERER_GPU2DRENDERER_HPP
+#define RENDERER_GPU2DRENDERER_HPP
 
 #include "Renderer/IRendererBackend.hpp"
+#include "Platform/Window.hpp"
 #include <vector>
 
 namespace Engine {
 namespace RenderSystem {
 
-class TerminalCanvasRenderer : public IRendererBackend {
+class GPU2DRenderer : public IRendererBackend {
 public:
-    TerminalCanvasRenderer() = default;
-    ~TerminalCanvasRenderer() override = default;
+    explicit GPU2DRenderer(Platform::Window* window = nullptr);
+    ~GPU2DRenderer() override = default;
 
     bool init(int width, int height, const std::string& title) override;
     void begin_frame() override;
@@ -26,15 +27,13 @@ public:
     void shutdown() override;
 
 private:
-    int m_width = 80;
-    int m_height = 24;
-    std::string m_title;
-    std::vector<char> m_buffer;
-
-    void setPixel(int x, int y, char symbol);
+    uint32_t colorToHex(const Color& c);
+    Platform::Window* m_window;
+    int m_width;
+    int m_height;
 };
 
 } // namespace RenderSystem
 } // namespace Engine
 
-#endif // RENDERER_TERMINALCANVASRENDERER_HPP
+#endif // RENDERER_GPU2DRENDERER_HPP

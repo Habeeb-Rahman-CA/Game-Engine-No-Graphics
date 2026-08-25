@@ -12,7 +12,6 @@ SOURCES = main.cpp \
           src/Input/Input.cpp \
           src/Renderer/Renderer.cpp \
           src/Renderer/TerminalCanvasRenderer.cpp \
-          src/Renderer/WindowCanvasRenderer.cpp \
           src/Audio/Audio.cpp \
           src/State/StateManager.cpp \
           src/State/ConcreteStates.cpp \
@@ -35,7 +34,9 @@ SOURCES = main.cpp \
           src/Scene/SceneSerializer.cpp \
           src/Platform/FileSystem.cpp \
           src/Platform/Window.cpp \
-          src/Platform/Platform.cpp
+          src/Platform/Platform.cpp \
+          src/Renderer/WindowCanvasRenderer.cpp \
+          src/Renderer/GPU2DRenderer.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
@@ -121,6 +122,9 @@ test-ai: $(TARGET)
 test-window: $(TARGET)
 	./$(TARGET) --window
 
+test-gpu: $(TARGET)
+	./$(TARGET) --gpu
+
 TEST_SOURCES = tests/test_runner.cpp \
                tests/math_tests.cpp \
                tests/allocator_tests.cpp \
@@ -128,6 +132,7 @@ TEST_SOURCES = tests/test_runner.cpp \
                tests/collision_tests.cpp \
                tests/event_tests.cpp \
                tests/serialization_tests.cpp \
+               src/Core/Time.cpp \
                src/World/World.cpp \
                src/Physics/Collision.cpp \
                src/Memory/ArenaAllocator.cpp \
@@ -140,7 +145,8 @@ TEST_SOURCES = tests/test_runner.cpp \
                src/Platform/FileSystem.cpp \
                src/Platform/Window.cpp \
                src/Platform/Platform.cpp \
-               src/Renderer/WindowCanvasRenderer.cpp
+               src/Renderer/WindowCanvasRenderer.cpp \
+               src/Renderer/GPU2DRenderer.cpp
 
 test-engine:
 	@mkdir -p $(BUILD_DIR)
@@ -161,7 +167,8 @@ BENCHMARK_SOURCES = benchmarks/benchmark_runner.cpp \
                     src/Platform/FileSystem.cpp \
                     src/Platform/Window.cpp \
                     src/Platform/Platform.cpp \
-                    src/Renderer/WindowCanvasRenderer.cpp
+                    src/Renderer/WindowCanvasRenderer.cpp \
+                    src/Renderer/GPU2DRenderer.cpp
 
 benchmark:
 	@mkdir -p $(BUILD_DIR)
