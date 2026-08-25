@@ -19,6 +19,8 @@
 #include "Platform/FileSystem.hpp"
 #include "Audio/Audio.hpp"
 #include "Event/EventBus.hpp"
+#include "UI/HUDSystem.hpp"
+#include "World/Tilemap.hpp"
 #include "Debug/Logger.hpp"
 #include "Scene/SceneSerializer.hpp"
 

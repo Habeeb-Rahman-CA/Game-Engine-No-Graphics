@@ -54,6 +54,47 @@ $(TARGET): $(SOURCES)
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(SOURCES) $(LDFLAGS) -o $(TARGET)
 
+SNAKE_SOURCES = SnakeGame/src/main.cpp \
+                src/Core/Engine.cpp \
+                src/Core/Time.cpp \
+                src/Core/Input.cpp \
+                src/Input/TerminalInputBackend.cpp \
+                src/Input/Input.cpp \
+                src/Renderer/Renderer.cpp \
+                src/Renderer/TerminalCanvasRenderer.cpp \
+                src/Audio/Audio.cpp \
+                src/State/StateManager.cpp \
+                src/State/ConcreteStates.cpp \
+                src/World/World.cpp \
+                src/Physics/Collision.cpp \
+                src/System/MovementSystem.cpp \
+                src/System/PhysicsSystem.cpp \
+                src/System/GameplaySystem.cpp \
+                src/System/RenderSystem.cpp \
+                src/System/AnimationSystem.cpp \
+                src/System/AISystem.cpp \
+                src/Memory/ArenaAllocator.cpp \
+                src/Memory/PoolAllocator.cpp \
+                src/Memory/MemoryBenchmark.cpp \
+                src/Resources/Resource.cpp \
+                src/Event/EventBus.cpp \
+                src/Debug/Profiler.cpp \
+                src/Debug/Logger.cpp \
+                src/Debug/DebugRenderer.cpp \
+                src/Scene/SceneSerializer.cpp \
+                src/Platform/FileSystem.cpp \
+                src/Platform/Window.cpp \
+                src/Platform/Platform.cpp \
+                src/Renderer/WindowCanvasRenderer.cpp \
+                src/Renderer/GPU2DRenderer.cpp \
+                src/Physics/SpatialGrid.cpp \
+                src/UI/HUDSystem.cpp \
+                src/World/Tilemap.cpp
+
+snake_game: $(SNAKE_SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $(SNAKE_SOURCES) $(LDFLAGS) -o $(BUILD_DIR)/snake_game
+
 run: $(TARGET)
 	./$(TARGET)
 

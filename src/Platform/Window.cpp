@@ -90,6 +90,7 @@ void Window::poll_events() {
             }
         } else if (event.type == KeyPress) {
             KeySym keysym = XLookupKeysym(&event.xkey, 0);
+            m_lastKeysym = static_cast<uint32_t>(keysym);
             if (keysym == XK_Escape) {
                 m_shouldClose = true;
             }

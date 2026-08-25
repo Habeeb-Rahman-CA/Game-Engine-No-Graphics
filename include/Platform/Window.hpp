@@ -50,8 +50,10 @@ public:
         m_mouseLeftClicked = false;
         m_mouseRightClicked = false;
         m_lastKeyChar = 0;
+        m_lastKeysym = 0;
     }
     char get_last_key_char() const { return m_lastKeyChar; }
+    uint32_t get_last_keysym() const { return m_lastKeysym; }
 
 private:
     WindowProps m_props;
@@ -65,6 +67,7 @@ private:
     bool m_mouseLeftClicked = false;
     bool m_mouseRightClicked = false;
     char m_lastKeyChar = 0;
+    uint32_t m_lastKeysym = 0;
 
     // Platform specific native window handles
     void* m_displayHandle; // Display*
