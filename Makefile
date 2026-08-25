@@ -64,10 +64,13 @@ test-phase9: $(TARGET)
 test-profiler: $(TARGET)
 	./$(TARGET) --profiler
 
+test-math: $(TARGET)
+	./$(TARGET) --math
+
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler perf-profile clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math perf-profile clean

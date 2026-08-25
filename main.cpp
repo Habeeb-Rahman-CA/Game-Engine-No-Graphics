@@ -1,5 +1,6 @@
 #include "Core/Engine.hpp"
 #include "Debug/Logger.hpp"
+#include "Math/Math.hpp"
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -15,7 +16,14 @@ void printHelp(const char* progName) {
               << "  --log-world       Log world entities and component states (Phase 4 demo)\n"
               << "  --phase2          Run Phase 2 Time System demonstration\n"
               << "  --phase3          Run Phase 3 Fixed Timestep demonstration\n"
-              << "  --phase4          Run Phase 4 Entity & Component System demonstration\n"
+              << "  --phase4          Run Phase 4 Entity System demonstration\n"
+              << "  --phase5          Run Phase 5 Component Archetype demonstration\n"
+              << "  --phase6          Run Phase 6 System Pipeline demonstration\n"
+              << "  --phase7          Run Phase 7 Memory Allocators & Benchmark\n"
+              << "  --phase8          Run Phase 8 Resource Manager & Asset Cache\n"
+              << "  --phase9          Run Phase 9 Event System demonstration\n"
+              << "  --profiler        Run Phase 10 Instrumentation Profiler\n"
+              << "  --math            Run Math Library demonstration\n"
               << "  --no-stats        Disable periodic render statistics printing\n"
               << "  --help, -h        Show this help message\n";
 }
@@ -267,6 +275,59 @@ void runProfilerDemo() {
     Engine::Debug::Profiler::getInstance().printFrameReport();
 }
 
+void runMathDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   ENGINE MATH LIBRARY DEMONSTRATION                      ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::Math;
+
+    // 1. Vector Operations
+    LOG_INFO("\n--- 1. VECTOR OPERATIONS (Vec2, Vec3, Vec4) ---");
+    Vec2 v1(3.0, 4.0);
+    Vec2 v2(1.0, 2.0);
+    LOG_INFO("Vec2 v1: " + v1.toString() + " | Length: " + std::to_string(v1.length()));
+    LOG_INFO("Vec2 v1 Normalized: " + v1.normalized().toString());
+    LOG_INFO("Vec2 v1 + v2: " + (v1 + v2).toString());
+    LOG_INFO("Vec2 Dot Product (v1 . v2): " + std::to_string(dot(v1, v2)));
+    LOG_INFO("Vec2 Distance (v1 -> v2): " + std::to_string(distance(v1, v2)));
+    LOG_INFO("Vec2 Lerp (v1 -> v2, t=0.5): " + lerp(v1, v2, 0.5).toString());
+
+    Vec3 v3a(1.0, 0.0, 0.0);
+    Vec3 v3b(0.0, 1.0, 0.0);
+    Vec3 crossProd = cross(v3a, v3b);
+    LOG_INFO("Vec3 Cross Product (X x Y): " + crossProd.toString());
+
+    // 2. Matrix Transformations
+    LOG_INFO("\n--- 2. MATRIX TRANSFORMATIONS (Mat4) ---");
+    Mat4 trans = Mat4::translation(Vec3(10.0, 20.0, 0.0));
+    Mat4 rot = Mat4::rotationZ(radians(90.0));
+    Mat4 scale = Mat4::scale(Vec3(2.0, 2.0, 1.0));
+    Mat4 modelMatrix = trans * rot * scale;
+
+    Vec3 localPoint(1.0, 0.0, 0.0);
+    Vec3 worldPoint = modelMatrix.transformPoint(localPoint);
+    LOG_INFO("Local Point (1, 0, 0) transformed by Model Matrix: " + worldPoint.toString());
+
+    // 3. 2D Geometry & Bounding Volumes
+    LOG_INFO("\n--- 3. 2D GEOMETRY & BOUNDING VOLUMES ---");
+    Rectangle rect(0.0, 0.0, 100.0, 50.0);
+    Vec2 p1(50.0, 25.0);
+    Vec2 p2(150.0, 25.0);
+    LOG_INFO("Rectangle [0,0, 100,50] contains Point (50, 25): " + std::string(rect.contains(p1) ? "YES" : "NO"));
+    LOG_INFO("Rectangle [0,0, 100,50] contains Point (150, 25): " + std::string(rect.contains(p2) ? "YES" : "NO"));
+
+    Circle circle(Vec2(50.0, 25.0), 30.0);
+    LOG_INFO("Circle center (50, 25) r=30 intersects Rectangle [0,0, 100,50]: " + std::string(circle.intersects(rect) ? "YES" : "NO"));
+
+    AABB aabb1 = AABB::fromCenterSize(Vec2(0.0, 0.0), Vec2(10.0, 10.0));
+    AABB aabb2 = AABB::fromCenterSize(Vec2(5.0, 5.0), Vec2(10.0, 10.0));
+    AABB aabb3 = AABB::fromCenterSize(Vec2(20.0, 20.0), Vec2(10.0, 10.0));
+    LOG_INFO("AABB1 [-5..5] intersects AABB2 [0..10]: " + std::string(aabb1.intersects(aabb2) ? "YES" : "NO"));
+    LOG_INFO("AABB1 [-5..5] intersects AABB3 [15..25]: " + std::string(aabb1.intersects(aabb3) ? "YES" : "NO"));
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -277,6 +338,7 @@ int main(int argc, char* argv[]) {
     bool isPhase8Demo = false;
     bool isPhase9Demo = false;
     bool isProfilerDemo = false;
+    bool isMathDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -314,6 +376,8 @@ int main(int argc, char* argv[]) {
             isPhase9Demo = true;
         } else if (std::strcmp(argv[i], "--profiler") == 0) {
             isProfilerDemo = true;
+        } else if (std::strcmp(argv[i], "--math") == 0) {
+            isMathDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -359,6 +423,11 @@ int main(int argc, char* argv[]) {
 
     if (isProfilerDemo) {
         runProfilerDemo();
+        return 0;
+    }
+
+    if (isMathDemo) {
+        runMathDemo();
         return 0;
     }
 
