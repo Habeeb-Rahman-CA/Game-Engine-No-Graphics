@@ -1,0 +1,10 @@
+{
+  "scene": "Engine Saved Scene",
+  "entities": [
+    {
+      "name": "Test_Hero",
+      "transform": { "x": 15, "y": 30, "z": 0 },
+      "health": { "current": 75, "max": 100 }
+    }
+  ]
+}

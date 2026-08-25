@@ -46,5 +46,18 @@ add_library(EngineCore STATIC ${ENGINE_SOURCES})
 add_executable(game_engine main.cpp)
 target_link_libraries(game_engine PRIVATE EngineCore)
 
+# Test Runner Executable
+add_executable(engine_tests
+    tests/test_runner.cpp
+    tests/math_tests.cpp
+    tests/allocator_tests.cpp
+    tests/entity_tests.cpp
+    tests/collision_tests.cpp
+    tests/event_tests.cpp
+    tests/serialization_tests.cpp
+)
+target_link_libraries(engine_tests PRIVATE EngineCore)
+
 # Target options
 target_compile_options(game_engine PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(engine_tests PRIVATE -Wall -Wextra -Wpedantic)
