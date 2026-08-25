@@ -719,6 +719,52 @@ void runAudioDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Debug/DebugRenderer.hpp"
+
+void runDebugToolsDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                     DEBUG TOOLS OVERLAY DEMONSTRATION                    ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using namespace Engine::DebugSystem;
+    using namespace Engine::RenderSystem;
+    using namespace Engine::Math;
+
+    Renderer::init(60, 15, "Debug Renderer Viewport Window");
+    DebugRenderer::init();
+
+    World world;
+    Entity player = world.create_entity("Player_Hero");
+    world.add_transform(player, Transform(Vec3(15.0, 5.0, 0.0)));
+    world.add_velocity(player, Velocity(Vec3(3.0, 1.5, 0.0)));
+    world.add_collider(player, Collider2D::MakeBox(Vec2(8.0, 4.0)));
+
+    Entity enemy = world.create_entity("Enemy_Boss");
+    world.add_transform(enemy, Transform(Vec3(40.0, 7.0, 0.0)));
+    world.add_collider(enemy, Collider2D::MakeCircle(4.0));
+
+    LOG_INFO("\n--- 1. TOGGLING DEBUG OVERLAYS (F1..F5) ---");
+    DebugRenderer::toggleCollisionBoxes();  // F1
+    DebugRenderer::toggleEntityIds();       // F2
+    DebugRenderer::toggleFPS();             // F3
+    DebugRenderer::toggleProfiler();        // F4
+    DebugRenderer::togglePhysicsVectors();  // F5
+
+    LOG_INFO("\n--- 2. RENDERING FRAME WITH FULL DEBUG OVERLAY (F1..F5 ACTIVE) ---");
+    Renderer::begin_frame();
+    Renderer::clear(Color::Black);
+
+    // Render debug overlays onto viewport canvas
+    DebugRenderer::renderDebugOverlay(world, 60.0);
+
+    Renderer::end_frame();
+
+    Renderer::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -738,6 +784,7 @@ int main(int argc, char* argv[]) {
     bool isCameraDemo = false;
     bool isSpriteDemo = false;
     bool isAudioDemo = false;
+    bool isDebugToolsDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -793,6 +840,8 @@ int main(int argc, char* argv[]) {
             isSpriteDemo = true;
         } else if (std::strcmp(argv[i], "--audio") == 0) {
             isAudioDemo = true;
+        } else if (std::strcmp(argv[i], "--debug-tools") == 0) {
+            isDebugToolsDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -883,6 +932,11 @@ int main(int argc, char* argv[]) {
 
     if (isAudioDemo) {
         runAudioDemo();
+        return 0;
+    }
+
+    if (isDebugToolsDemo) {
+        runDebugToolsDemo();
         return 0;
     }
 

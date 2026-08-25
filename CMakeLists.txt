@@ -34,6 +34,7 @@ set(ENGINE_SOURCES
     src/Event/EventBus.cpp
     src/Debug/Profiler.cpp
     src/Debug/Logger.cpp
+    src/Debug/DebugRenderer.cpp
 )
 
 # Engine library
