@@ -1,5 +1,6 @@
 #include "World/World.hpp"
 #include "Debug/Logger.hpp"
+#include "Debug/Profiler.hpp"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -82,6 +83,7 @@ void World::add_system(std::unique_ptr<ISystem> system) {
 }
 
 void World::update(double dt) {
+    PROFILE_SCOPE("ECS");
     // If specific systems are registered, update them sequentially
     if (!m_systems.empty()) {
         for (auto& system : m_systems) {

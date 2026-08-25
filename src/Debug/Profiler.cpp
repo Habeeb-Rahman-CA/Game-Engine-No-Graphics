@@ -22,6 +22,7 @@ void Profiler::endFrame() {
     auto endTime = Clock::now();
     m_lastFrameTimeMs = std::chrono::duration<double, std::milli>(endTime - m_frameStartTime).count();
     m_lastTimings = m_currentTimings;
+    m_lastTimingOrder = m_timingOrder;
     m_lastFrameAllocations = m_currentFrameAllocations.load();
     m_lastFrameAllocatedBytes = m_currentFrameAllocatedBytes.load();
 }
@@ -50,7 +51,7 @@ std::string Profiler::getReportString() const {
     ss << "--------------------------------------------------------\n";
 
     double calculatedTotal = 0.0;
-    for (const auto& name : m_timingOrder) {
+    for (const auto& name : m_lastTimingOrder) {
         auto it = m_lastTimings.find(name);
         if (it != m_lastTimings.end()) {
             double ms = it->second;

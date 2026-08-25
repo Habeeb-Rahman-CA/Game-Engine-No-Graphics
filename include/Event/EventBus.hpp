@@ -3,6 +3,7 @@
 
 #include "Event/Event.hpp"
 #include "Debug/Logger.hpp"
+#include "Debug/Profiler.hpp"
 #include <unordered_map>
 #include <vector>
 #include <functional>
@@ -59,6 +60,7 @@ public:
 
     // Process and dispatch all queued events
     void dispatchEvents() {
+        PROFILE_SCOPE("Events");
         if (m_eventQueue.empty()) return;
 
         std::vector<std::unique_ptr<IEvent>> currentQueue;

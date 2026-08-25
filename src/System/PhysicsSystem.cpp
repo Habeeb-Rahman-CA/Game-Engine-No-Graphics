@@ -1,11 +1,13 @@
 #include "System/PhysicsSystem.hpp"
 #include "World/World.hpp"
 #include "Debug/Logger.hpp"
+#include "Debug/Profiler.hpp"
 
 namespace Engine {
 namespace System {
 
 void PhysicsSystem::update(WorldSystem::World& world, double dt) {
+    PROFILE_SCOPE("Physics");
     (void)dt; // Unused for instant collision checks
 
     // Check collision between moving entities and walls

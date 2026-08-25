@@ -239,6 +239,34 @@ void runPhase9Demo() {
     LOG_INFO("Queue Size after dispatch: " + std::to_string(bus.getQueueSize()) + " events");
 }
 
+#include "Debug/Profiler.hpp"
+
+void runProfilerDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("       PHASE 10 DEMO: INSTRUMENTATION PROFILER & TIMING BREAKDOWN        ");
+    LOG_INFO("==========================================================================");
+
+    Engine::Core::EngineConfig config;
+    config.targetFps = 60.0;
+    config.fixedDeltaTime = 1.0 / 60.0;
+    config.maxFramesToRun = 10;
+    config.showStats = false;
+
+    Engine::Core::Engine engine(config);
+    engine.initialize();
+
+    // Register systems into World pipeline sequence
+    engine.getWorld().add_system(std::make_unique<Engine::System::MovementSystem>());
+    engine.getWorld().add_system(std::make_unique<Engine::System::PhysicsSystem>());
+    engine.getWorld().add_system(std::make_unique<Engine::System::GameplaySystem>());
+
+    LOG_INFO("\n=== RUNNING INSTRUMENTED GAME LOOP FOR 10 FRAMES ===");
+    engine.run();
+
+    LOG_INFO("\n=== FINAL INSTRUMENTATION PROFILER BREAKDOWN REPORT ===");
+    Engine::Debug::Profiler::getInstance().printFrameReport();
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -248,6 +276,7 @@ int main(int argc, char* argv[]) {
     bool isPhase7Demo = false;
     bool isPhase8Demo = false;
     bool isPhase9Demo = false;
+    bool isProfilerDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -283,6 +312,8 @@ int main(int argc, char* argv[]) {
             isPhase8Demo = true;
         } else if (std::strcmp(argv[i], "--phase9") == 0) {
             isPhase9Demo = true;
+        } else if (std::strcmp(argv[i], "--profiler") == 0) {
+            isProfilerDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -323,6 +354,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase9Demo) {
         runPhase9Demo();
+        return 0;
+    }
+
+    if (isProfilerDemo) {
+        runProfilerDemo();
         return 0;
     }
 

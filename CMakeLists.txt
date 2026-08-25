@@ -22,6 +22,7 @@ set(ENGINE_SOURCES
     src/Memory/MemoryBenchmark.cpp
     src/Resources/Resource.cpp
     src/Event/EventBus.cpp
+    src/Debug/Profiler.cpp
     src/Debug/Logger.cpp
 )
 

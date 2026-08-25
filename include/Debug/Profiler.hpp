@@ -55,6 +55,7 @@ private:
     std::unordered_map<std::string, double> m_currentTimings;
     std::vector<std::string> m_timingOrder;
     std::unordered_map<std::string, double> m_lastTimings;
+    std::vector<std::string> m_lastTimingOrder;
 };
 
 class ProfileScope {

@@ -1,5 +1,6 @@
 #include "Core/Engine.hpp"
 #include "Debug/Logger.hpp"
+#include "Debug/Profiler.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -203,13 +204,10 @@ void Engine::run() {
 
     LOG_INFO("Starting Game Engine Main Loop...");
 
-    // =========================================================================
-    // PHASE 1 MAIN GAME LOOP
-    // =========================================================================
-    // Initialize -> while(running) { process_input(), update(), fixed_update(), render() } -> Shutdown
-    // =========================================================================
-    
     while (m_state != EngineState::Shutdown) {
+        // Start Profiler Frame Lifecycle
+        ::Engine::Debug::Profiler::getInstance().beginFrame();
+
         // Step 1: Advance time system
         m_time.update();
 
@@ -221,21 +219,34 @@ void Engine::run() {
         }
 
         // Step 3: Process Input
-        processInput();
+        {
+            PROFILE_SCOPE("Input");
+            processInput();
+        }
 
         // Step 4: Logic Updates (if not paused)
         if (m_state == EngineState::Running) {
             // Fixed rate updates (Physics / Fixed logic accumulator)
             while (m_time.checkFixedUpdate()) {
+                PROFILE_SCOPE("FixedUpdate");
                 fixedUpdate(m_time.fixedDeltaTime());
             }
 
             // Variable frame update (General game logic)
-            update(m_time.deltaTime());
+            {
+                PROFILE_SCOPE("Update");
+                update(m_time.deltaTime());
+            }
         }
 
         // Step 5: Render (Outputs statistics / frame state)
-        render();
+        {
+            PROFILE_SCOPE("Render");
+            render();
+        }
+
+        // End Profiler Frame Lifecycle
+        ::Engine::Debug::Profiler::getInstance().endFrame();
 
         // Step 6: Sleep / Frame pacing to hit target frame rate
         m_time.sleepIfNecessary();

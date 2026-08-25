@@ -1,11 +1,13 @@
 #include "System/GameplaySystem.hpp"
 #include "World/World.hpp"
 #include "Debug/Logger.hpp"
+#include "Debug/Profiler.hpp"
 
 namespace Engine {
 namespace System {
 
 void GameplaySystem::update(WorldSystem::World& world, double dt) {
+    PROFILE_SCOPE("Gameplay");
     (void)dt;
 
     // Check health states of all entities with Health components
