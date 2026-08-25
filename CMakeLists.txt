@@ -37,10 +37,18 @@ set(ENGINE_SOURCES
     src/Debug/Logger.cpp
     src/Debug/DebugRenderer.cpp
     src/Scene/SceneSerializer.cpp
+    src/Platform/FileSystem.cpp
+    src/Platform/Window.cpp
+    src/Platform/Platform.cpp
+    src/Renderer/WindowCanvasRenderer.cpp
 )
+
+# Find & Link X11
+find_package(X11 REQUIRED)
 
 # Engine library
 add_library(EngineCore STATIC ${ENGINE_SOURCES})
+target_link_libraries(EngineCore PRIVATE ${X11_LIBRARIES})
 
 # Executable
 add_executable(game_engine main.cpp)

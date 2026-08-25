@@ -1,5 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -Iinclude -O2
+LDFLAGS = -lX11
 BUILD_DIR = build
 TARGET = $(BUILD_DIR)/game_engine
 
@@ -11,6 +12,7 @@ SOURCES = main.cpp \
           src/Input/Input.cpp \
           src/Renderer/Renderer.cpp \
           src/Renderer/TerminalCanvasRenderer.cpp \
+          src/Renderer/WindowCanvasRenderer.cpp \
           src/Audio/Audio.cpp \
           src/State/StateManager.cpp \
           src/State/ConcreteStates.cpp \
@@ -30,7 +32,10 @@ SOURCES = main.cpp \
           src/Debug/Profiler.cpp \
           src/Debug/Logger.cpp \
           src/Debug/DebugRenderer.cpp \
-          src/Scene/SceneSerializer.cpp
+          src/Scene/SceneSerializer.cpp \
+          src/Platform/FileSystem.cpp \
+          src/Platform/Window.cpp \
+          src/Platform/Platform.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
@@ -42,7 +47,7 @@ $(BUILD_DIR)/%.o: %.cpp
 
 $(TARGET): $(SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET)
+	$(CXX) $(CXXFLAGS) $(SOURCES) $(LDFLAGS) -o $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)
@@ -113,6 +118,9 @@ test-scene: $(TARGET)
 test-ai: $(TARGET)
 	./$(TARGET) --ai
 
+test-window: $(TARGET)
+	./$(TARGET) --window
+
 TEST_SOURCES = tests/test_runner.cpp \
                tests/math_tests.cpp \
                tests/allocator_tests.cpp \
@@ -128,11 +136,15 @@ TEST_SOURCES = tests/test_runner.cpp \
                src/Event/EventBus.cpp \
                src/Debug/Profiler.cpp \
                src/Debug/Logger.cpp \
-               src/Scene/SceneSerializer.cpp
+               src/Scene/SceneSerializer.cpp \
+               src/Platform/FileSystem.cpp \
+               src/Platform/Window.cpp \
+               src/Platform/Platform.cpp \
+               src/Renderer/WindowCanvasRenderer.cpp
 
 test-engine:
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(TEST_SOURCES) -o $(BUILD_DIR)/engine_tests
+	$(CXX) $(CXXFLAGS) $(TEST_SOURCES) $(LDFLAGS) -o $(BUILD_DIR)/engine_tests
 	./$(BUILD_DIR)/engine_tests
 
 BENCHMARK_SOURCES = benchmarks/benchmark_runner.cpp \
@@ -145,11 +157,15 @@ BENCHMARK_SOURCES = benchmarks/benchmark_runner.cpp \
                     src/Event/EventBus.cpp \
                     src/Debug/Profiler.cpp \
                     src/Debug/Logger.cpp \
-                    src/Scene/SceneSerializer.cpp
+                    src/Scene/SceneSerializer.cpp \
+                    src/Platform/FileSystem.cpp \
+                    src/Platform/Window.cpp \
+                    src/Platform/Platform.cpp \
+                    src/Renderer/WindowCanvasRenderer.cpp
 
 benchmark:
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(BENCHMARK_SOURCES) -o $(BUILD_DIR)/engine_benchmarks
+	$(CXX) $(CXXFLAGS) $(BENCHMARK_SOURCES) $(LDFLAGS) -o $(BUILD_DIR)/engine_benchmarks
 	./$(BUILD_DIR)/engine_benchmarks
 
 benchmark-perf: benchmark

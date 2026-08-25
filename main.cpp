@@ -861,6 +861,46 @@ void runAIDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Platform/Platform.hpp"
+#include "Renderer/WindowCanvasRenderer.hpp"
+
+void runWindowDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("              PLATFORM SUBSYSTEM & NATIVE GRAPHICAL WINDOW DEMO            ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine;
+    using namespace Engine::RenderSystem;
+
+    Platform::WindowProps props("Engine Native Graphical Window", 800, 600);
+    if (!Platform::Platform::getInstance().initialize(props)) {
+        LOG_ERROR("Failed to initialize Platform!");
+        return;
+    }
+
+    Platform::Window* window = Platform::Platform::getInstance().getWindow();
+    auto windowRenderer = std::make_unique<WindowCanvasRenderer>(window);
+    Renderer::setBackend(std::move(windowRenderer));
+
+    LOG_INFO("\n--- RENDERING PRIMITIVES TO GRAPHICAL OS WINDOW ---");
+    for (int frame = 0; frame < 5; ++frame) {
+        LOG_INFO("[WINDOW FRAME " + std::to_string(frame + 1) + "] Clearing canvas & drawing objects...");
+        Renderer::begin_frame();
+        Renderer::clear(Color(0.1f, 0.1f, 0.15f, 1.0f));
+
+        // Draw Rectangles, Circles, and Lines
+        Renderer::draw_rect(Math::AABB(Math::Vec2(100, 100), Math::Vec2(250, 250)), Color::Blue, true);
+        Renderer::draw_circle(Math::Circle(Math::Vec2(400, 300), 50), Color::Red, true);
+        Renderer::draw_line(Math::Vec2(50, 50), Math::Vec2(750, 550), Color::Yellow);
+
+        Renderer::end_frame();
+        Platform::Platform::getInstance().update();
+    }
+
+    Platform::Platform::getInstance().shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -883,6 +923,7 @@ int main(int argc, char* argv[]) {
     bool isDebugToolsDemo = false;
     bool isSceneDemo = false;
     bool isAIDemo = false;
+    bool isWindowDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -944,12 +985,19 @@ int main(int argc, char* argv[]) {
             isSceneDemo = true;
         } else if (std::strcmp(argv[i], "--ai") == 0) {
             isAIDemo = true;
+        } else if (std::strcmp(argv[i], "--window") == 0) {
+            isWindowDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
             printHelp(argv[0]);
             return 0;
         }
+    }
+
+    if (isWindowDemo) {
+        runWindowDemo();
+        return 0;
     }
 
     if (isPhase3Demo) {
