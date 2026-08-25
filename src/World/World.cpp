@@ -26,6 +26,7 @@ void World::destroy_entity(Entity entity) {
         m_transforms.erase(entity);
         m_velocities.erase(entity);
         m_healths.erase(entity);
+        m_colliders.erase(entity);
         m_names.erase(entity);
         LOG_INFO("Destroyed Entity ID: " + std::to_string(entity) + " ('" + name + "')");
     }
@@ -43,6 +44,10 @@ void World::add_health(Entity e, const Health& h) {
     m_healths[e] = h;
 }
 
+void World::add_collider(Entity e, const Collider2D& c) {
+    m_colliders[e] = c;
+}
+
 Transform* World::get_transform(Entity e) {
     auto it = m_transforms.find(e);
     return (it != m_transforms.end()) ? &it->second : nullptr;
@@ -56,6 +61,11 @@ Velocity* World::get_velocity(Entity e) {
 Health* World::get_health(Entity e) {
     auto it = m_healths.find(e);
     return (it != m_healths.end()) ? &it->second : nullptr;
+}
+
+Collider2D* World::get_collider(Entity e) {
+    auto it = m_colliders.find(e);
+    return (it != m_colliders.end()) ? &it->second : nullptr;
 }
 
 std::string World::get_name(Entity e) const {
@@ -73,6 +83,10 @@ bool World::has_velocity(Entity e) const {
 
 bool World::has_health(Entity e) const {
     return m_healths.find(e) != m_healths.end();
+}
+
+bool World::has_collider(Entity e) const {
+    return m_colliders.find(e) != m_colliders.end();
 }
 
 #include "System/ISystem.hpp"

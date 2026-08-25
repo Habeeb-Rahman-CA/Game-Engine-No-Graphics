@@ -18,6 +18,7 @@ using Transform = EntitySystem::Transform;
 using Velocity = EntitySystem::Velocity;
 using Health = EntitySystem::Health;
 using NameTag = EntitySystem::NameTag;
+using Collider2D = EntitySystem::Collider2D;
 using ISystem = Engine::System::ISystem;
 
 class World {
@@ -35,15 +36,18 @@ public:
     void add_transform(Entity e, const Transform& t);
     void add_velocity(Entity e, const Velocity& v);
     void add_health(Entity e, const Health& h);
+    void add_collider(Entity e, const Collider2D& c);
 
     Transform* get_transform(Entity e);
     Velocity* get_velocity(Entity e);
     Health* get_health(Entity e);
+    Collider2D* get_collider(Entity e);
     std::string get_name(Entity e) const;
 
     bool has_transform(Entity e) const;
     bool has_velocity(Entity e) const;
     bool has_health(Entity e) const;
+    bool has_collider(Entity e) const;
 
     // System Pipeline Management
     void add_system(std::unique_ptr<ISystem> system);
@@ -60,6 +64,7 @@ private:
     std::unordered_map<Entity, Transform> m_transforms;
     std::unordered_map<Entity, Velocity> m_velocities;
     std::unordered_map<Entity, Health> m_healths;
+    std::unordered_map<Entity, Collider2D> m_colliders;
     std::unordered_map<Entity, NameTag> m_names;
 
     // Registered Systems Pipeline

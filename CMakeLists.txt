@@ -18,6 +18,7 @@ set(ENGINE_SOURCES
     src/State/StateManager.cpp
     src/State/ConcreteStates.cpp
     src/World/World.cpp
+    src/Physics/Collision.cpp
     src/System/MovementSystem.cpp
     src/System/PhysicsSystem.cpp
     src/System/GameplaySystem.cpp

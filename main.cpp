@@ -403,6 +403,66 @@ void runStateDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Physics/Collision.hpp"
+
+void runCollisionDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                 2D COLLISION SYSTEM & EVENT DEMONSTRATION                ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::Math;
+    using namespace Engine::Physics;
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using namespace Engine::EventSystem;
+    using namespace Engine::System;
+
+    // 1. Core 2D Shape Intersections
+    LOG_INFO("\n--- 1. CORE 2D INTERSECTION TESTS ---");
+    AABB box1 = AABB::fromCenterSize(Vec2(10.0, 10.0), Vec2(20.0, 20.0));
+    AABB box2 = AABB::fromCenterSize(Vec2(15.0, 15.0), Vec2(20.0, 20.0));
+    Circle circle1(Vec2(15.0, 15.0), 10.0);
+    Vec2 point1(12.0, 12.0);
+
+    LOG_INFO("AABB vs AABB Overlap [Box1 (10,10) & Box2 (15,15)]: " + std::string(Collision::intersects(box1, box2) ? "YES" : "NO"));
+    LOG_INFO("Circle vs Circle Overlap [Circle1 r=10 & Circle2 r=10]: " + std::string(Collision::intersects(circle1, Circle(Vec2(20,20), 10)) ? "YES" : "NO"));
+    LOG_INFO("Circle vs AABB Intersect [Circle1 (15,15) r=10 & Box1 (10,10)]: " + std::string(Collision::intersects(circle1, box1) ? "YES" : "NO"));
+    LOG_INFO("Point vs AABB Intersect [Point (12,12) in Box1 (10,10)]: " + std::string(Collision::intersects(point1, box1) ? "YES" : "NO"));
+
+    // 2. ECS Collision -> CollisionEvent -> GameplaySystem Pipeline
+    LOG_INFO("\n--- 2. ECS COLLISION -> EVENT -> GAMEPLAY SYSTEM PIPELINE ---");
+    World world;
+    EventBus eventBus;
+
+    auto physSystem = std::make_unique<PhysicsSystem>(&eventBus);
+    auto gameSystem = std::make_unique<GameplaySystem>(&eventBus);
+    gameSystem->setWorld(&world);
+
+    world.add_system(std::move(physSystem));
+    world.add_system(std::move(gameSystem));
+
+    // Create Player Entity
+    Entity player = world.create_entity("Player");
+    world.add_transform(player, Transform(Vec3(10.0, 10.0, 0.0)));
+    world.add_collider(player, Collider2D::MakeBox(Vec2(20.0, 20.0)));
+    world.add_health(player, Health(100));
+
+    // Create Enemy Entity colliding with Player
+    Entity enemy = world.create_entity("Enemy_Boss");
+    world.add_transform(enemy, Transform(Vec3(15.0, 15.0, 0.0)));
+    world.add_collider(enemy, Collider2D::MakeCircle(10.0));
+    world.add_health(enemy, Health(100));
+
+    LOG_INFO("\nExecuting World Update Pipeline (Collision Detection -> Event Dispatch -> Gameplay Reaction):");
+    world.update(0.016);
+    eventBus.dispatchEvents();
+
+    LOG_INFO("\nPost-Collision Entity Health States:");
+    LOG_INFO("Player HP: " + std::to_string(world.get_health(player)->value));
+    LOG_INFO("Enemy HP:  " + std::to_string(world.get_health(enemy)->value));
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -416,6 +476,7 @@ int main(int argc, char* argv[]) {
     bool isMathDemo = false;
     bool isInputDemo = false;
     bool isStateDemo = false;
+    bool isCollisionDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -459,6 +520,8 @@ int main(int argc, char* argv[]) {
             isInputDemo = true;
         } else if (std::strcmp(argv[i], "--state") == 0) {
             isStateDemo = true;
+        } else if (std::strcmp(argv[i], "--collision") == 0) {
+            isCollisionDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -519,6 +582,11 @@ int main(int argc, char* argv[]) {
 
     if (isStateDemo) {
         runStateDemo();
+        return 0;
+    }
+
+    if (isCollisionDemo) {
+        runCollisionDemo();
         return 0;
     }
 

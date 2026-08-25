@@ -12,6 +12,7 @@ SOURCES = main.cpp \
           src/State/StateManager.cpp \
           src/State/ConcreteStates.cpp \
           src/World/World.cpp \
+          src/Physics/Collision.cpp \
           src/System/MovementSystem.cpp \
           src/System/PhysicsSystem.cpp \
           src/System/GameplaySystem.cpp \
@@ -77,10 +78,13 @@ test-input: $(TARGET)
 test-state: $(TARGET)
 	./$(TARGET) --state
 
+test-collision: $(TARGET)
+	./$(TARGET) --collision
+
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state perf-profile clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision perf-profile clean
