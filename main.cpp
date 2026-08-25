@@ -803,6 +803,64 @@ void runSceneDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "System/AISystem.hpp"
+
+void runAIDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                     ENEMY AI FINITE STATE MACHINE DEMO                   ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+    using namespace Engine::System;
+    using namespace Engine::Math;
+
+    World world;
+    world.add_system(std::make_unique<AISystem>());
+    world.add_system(std::make_unique<MovementSystem>());
+
+    Entity player = world.create_entity("Player");
+    world.add_transform(player, Transform(Vec3(5.0, 5.0, 0.0)));
+    world.add_velocity(player, Velocity(Vec3(0.0, 0.0, 0.0)));
+    world.add_health(player, Health(100, 100));
+
+    Entity enemy = world.create_entity("Enemy_Boss");
+    world.add_transform(enemy, Transform(Vec3(40.0, 5.0, 0.0)));
+    world.add_velocity(enemy, Velocity(Vec3(0.0, 0.0, 0.0)));
+    world.add_health(enemy, Health(80, 80));
+
+    EnemyAI ai(AIState::Patrol, 15.0, 3.0, 4.0);
+    ai.patrolStartPos = Vec3(40.0, 5.0, 0.0);
+    ai.patrolEndPos   = Vec3(25.0, 5.0, 0.0);
+    world.add_ai(enemy, ai);
+
+    double dt = 0.5;
+
+    LOG_INFO("\n--- STEP 1: ENEMY PATROLLING ---");
+    for (int frame = 1; frame <= 3; ++frame) {
+        LOG_INFO("[FRAME " + std::to_string(frame) + "] Player @ " + world.get_transform(player)->position.toString() + 
+                 " | Enemy @ " + world.get_transform(enemy)->position.toString());
+        world.update(dt);
+    }
+
+    LOG_INFO("\n--- STEP 2: PLAYER ENTERS DETECTION RANGE (CHASE TRANSITION) ---");
+    world.get_transform(player)->position = Vec3(22.0, 5.0, 0.0);
+    for (int frame = 4; frame <= 6; ++frame) {
+        LOG_INFO("[FRAME " + std::to_string(frame) + "] Player @ " + world.get_transform(player)->position.toString() + 
+                 " | Enemy @ " + world.get_transform(enemy)->position.toString());
+        world.update(dt);
+    }
+
+    LOG_INFO("\n--- STEP 3: ENEMY ATTACKS PLAYER ---");
+    world.update(1.0);
+
+    LOG_INFO("\n--- STEP 4: ENEMY HP DROPS TO 0 (DEAD TRANSITION) ---");
+    world.get_health(enemy)->value = 0;
+    world.update(dt);
+
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -824,6 +882,7 @@ int main(int argc, char* argv[]) {
     bool isAudioDemo = false;
     bool isDebugToolsDemo = false;
     bool isSceneDemo = false;
+    bool isAIDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -883,6 +942,8 @@ int main(int argc, char* argv[]) {
             isDebugToolsDemo = true;
         } else if (std::strcmp(argv[i], "--scene") == 0) {
             isSceneDemo = true;
+        } else if (std::strcmp(argv[i], "--ai") == 0) {
+            isAIDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -983,6 +1044,11 @@ int main(int argc, char* argv[]) {
 
     if (isSceneDemo) {
         runSceneDemo();
+        return 0;
+    }
+
+    if (isAIDemo) {
+        runAIDemo();
         return 0;
     }
 

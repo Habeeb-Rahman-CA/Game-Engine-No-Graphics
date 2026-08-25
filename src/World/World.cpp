@@ -41,6 +41,8 @@ void World::destroy_entity(Entity entity) {
         m_sprites.erase(entity);
         m_animations.erase(entity);
         m_spritesheets.erase(entity);
+        m_animators.erase(entity);
+        m_ais.erase(entity);
         m_names.erase(entity);
         LOG_INFO("Destroyed Entity ID: " + std::to_string(entity) + " ('" + name + "')");
     }
@@ -179,6 +181,19 @@ bool World::has_spritesheet(Entity e) const {
 
 bool World::has_animator(Entity e) const {
     return m_animators.find(e) != m_animators.end();
+}
+
+void World::add_ai(Entity e, const EnemyAI& ai) {
+    m_ais[e] = ai;
+}
+
+EnemyAI* World::get_ai(Entity e) {
+    auto it = m_ais.find(e);
+    return (it != m_ais.end()) ? &it->second : nullptr;
+}
+
+bool World::has_ai(Entity e) const {
+    return m_ais.find(e) != m_ais.end();
 }
 
 #include "System/ISystem.hpp"

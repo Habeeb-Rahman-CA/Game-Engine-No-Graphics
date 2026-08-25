@@ -100,6 +100,40 @@ struct Collider2D {
     }
 };
 
+enum class AIState {
+    Idle,
+    Patrol,
+    Chase,
+    Attack,
+    Dead
+};
+
+inline std::string aiStateToString(AIState state) {
+    switch (state) {
+        case AIState::Idle:   return "Idle";
+        case AIState::Patrol: return "Patrol";
+        case AIState::Chase:  return "Chase";
+        case AIState::Attack: return "Attack";
+        case AIState::Dead:   return "Dead";
+        default: return "Unknown";
+    }
+}
+
+struct EnemyAI {
+    AIState state = AIState::Idle;
+    double detectionRange = 12.0;
+    double attackRange = 2.5;
+    double moveSpeed = 3.0;
+    double stateTimer = 0.0;
+
+    Math::Vec3 patrolStartPos;
+    Math::Vec3 patrolEndPos;
+    bool headingToEnd = true;
+
+    EnemyAI(AIState initialState = AIState::Idle, double detRange = 12.0, double atkRange = 2.5, double speed = 3.0)
+        : state(initialState), detectionRange(detRange), attackRange(atkRange), moveSpeed(speed) {}
+};
+
 } // namespace EntitySystem
 } // namespace Engine
 

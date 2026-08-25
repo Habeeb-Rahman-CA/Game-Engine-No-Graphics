@@ -27,6 +27,7 @@ set(ENGINE_SOURCES
     src/System/GameplaySystem.cpp
     src/System/RenderSystem.cpp
     src/System/AnimationSystem.cpp
+    src/System/AISystem.cpp
     src/Memory/ArenaAllocator.cpp
     src/Memory/PoolAllocator.cpp
     src/Memory/MemoryBenchmark.cpp

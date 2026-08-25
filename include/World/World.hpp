@@ -25,6 +25,7 @@ using Sprite = EntitySystem::Sprite;
 using Animation = EntitySystem::Animation;
 using SpriteSheet = EntitySystem::SpriteSheet;
 using Animator = EntitySystem::Animator;
+using EnemyAI = EntitySystem::EnemyAI;
 using ISystem = Engine::System::ISystem;
 
 class World {
@@ -53,6 +54,7 @@ public:
     void add_animation(Entity e, const Animation& a);
     void add_spritesheet(Entity e, const SpriteSheet& ss);
     void add_animator(Entity e, const Animator& anim);
+    void add_ai(Entity e, const EnemyAI& ai);
 
     Transform* get_transform(Entity e);
     Velocity* get_velocity(Entity e);
@@ -64,6 +66,7 @@ public:
     Animation* get_animation(Entity e);
     SpriteSheet* get_spritesheet(Entity e);
     Animator* get_animator(Entity e);
+    EnemyAI* get_ai(Entity e);
     std::string get_name(Entity e) const;
 
     bool has_transform(Entity e) const;
@@ -76,6 +79,7 @@ public:
     bool has_animation(Entity e) const;
     bool has_spritesheet(Entity e) const;
     bool has_animator(Entity e) const;
+    bool has_ai(Entity e) const;
 
     // System Pipeline Management
     void add_system(std::unique_ptr<ISystem> system);
@@ -99,6 +103,7 @@ private:
     std::unordered_map<Entity, Animation> m_animations;
     std::unordered_map<Entity, SpriteSheet> m_spritesheets;
     std::unordered_map<Entity, Animator> m_animators;
+    std::unordered_map<Entity, EnemyAI> m_ais;
     std::unordered_map<Entity, NameTag> m_names;
 
     // Registered Systems Pipeline
