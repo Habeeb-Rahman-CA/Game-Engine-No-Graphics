@@ -7,6 +7,8 @@
 #include "Renderer/Camera2D.hpp"
 #include "Event/EventBus.hpp"
 #include "Scene/SceneSerializer.hpp"
+#include "Debug/DebugRenderer.hpp"
+#include "Memory/MemoryBenchmark.hpp"
 
 #include <memory>
 #include <string>
@@ -47,6 +49,8 @@ private:
     void render_viewport_panel();
     void render_inspector_panel();
     void render_bottom_panel();
+    void render_asset_browser();
+    void render_benchmark_panel();
 
     // Interaction Helpers
     void handle_mouse_click(int mx, int my);
@@ -54,6 +58,7 @@ private:
     void select_entity(Engine::WorldSystem::Entity entity);
     void create_default_scene();
     void duplicate_selected_entity();
+    void run_memory_benchmark();
 
     // Engine Core & Systems
     Platform::Window m_window;
@@ -69,6 +74,28 @@ private:
     bool m_isDraggingInViewport = false;
     int m_lastDragMx = 0;
     int m_lastDragMy = 0;
+
+    // Debug Visualization Overlays (DebugRenderer Integration)
+    bool m_showCollisionBoxes = true;
+    bool m_showEntityIds = true;
+    bool m_showPhysicsVectors = true;
+
+    // Bottom Panel Tab (0: Console & Profiler, 1: Asset Browser, 2: Benchmark Tool)
+    int m_bottomTab = 0;
+    std::string m_selectedAsset = "player_hero.png";
+    std::vector<std::string> m_assetFiles = {
+        "player_hero.png",
+        "enemy_orc.png",
+        "enemy_goblin.png",
+        "box.png",
+        "jump.wav",
+        "level1.json",
+        "game.cfg"
+    };
+
+    // Benchmark Results (MemoryBenchmark Integration)
+    bool m_hasBenchmarkResults = false;
+    Memory::BenchmarkResults m_benchmarkResults;
 
     // Entity Renaming State
     bool m_isRenamingEntity = false;
@@ -92,10 +119,13 @@ private:
     // Console Filter (0: All, 1: Info, 2: Warn, 3: Error)
     int m_consoleFilter = 0;
 
-    // Performance Stats
+    // Subsystem Profiler Timings
     double m_frameTimeMs = 16.6;
     double m_fps = 60.0;
-    double m_physicsTimeMs = 0.15;
+    double m_physicsTimeMs = 1.2;
+    double m_ecsTimeMs = 0.7;
+    double m_aiTimeMs = 0.4;
+    double m_renderTimeMs = 3.1;
     int m_frameCount = 0;
 };
 
