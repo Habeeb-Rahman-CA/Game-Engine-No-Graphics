@@ -330,6 +330,8 @@ void runMathDemo() {
 
 #include "Input/Input.hpp"
 #include "Input/TerminalInputBackend.hpp"
+#include "State/StateManager.hpp"
+#include "State/ConcreteStates.hpp"
 
 void runInputDemo() {
     LOG_INFO("==========================================================================");
@@ -352,7 +354,7 @@ void runInputDemo() {
         backend->simulateMouseButton(MouseButton::Left, true);
     }
 
-    Input::update(); // Update input state cycle
+    Input::update();
 
     LOG_INFO("Mouse Position: " + Input::mouse_position().toString());
     LOG_INFO("Mouse Delta:    " + Input::mouse_delta().toString());
@@ -360,6 +362,44 @@ void runInputDemo() {
     LOG_INFO("Mouse Right Button Down: " + std::string(Input::is_mouse_button_down(MouseButton::Right) ? "YES" : "NO"));
 
     Input::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
+void runStateDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   GAME STATE MANAGEMENT DEMONSTRATION                    ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::StateSystem;
+
+    StateManager stateManager;
+
+    // Register state instances
+    stateManager.registerState(GameState::Menu, std::make_unique<MenuState>(stateManager));
+    stateManager.registerState(GameState::Playing, std::make_unique<PlayingState>(stateManager));
+    stateManager.registerState(GameState::Paused, std::make_unique<PausedState>(stateManager));
+    stateManager.registerState(GameState::GameOver, std::make_unique<GameOverState>(stateManager));
+
+    LOG_INFO("\n--- 1. INITIALIZING GAME TO MAIN MENU ---");
+    stateManager.changeState(GameState::Menu);
+
+    LOG_INFO("\n--- 2. TRANSITIONING MENU -> PLAYING ---");
+    stateManager.changeState(GameState::Playing);
+
+    LOG_INFO("\n--- 3. SIMULATING PLAYING STATE TICKS (3 seconds to trigger Game Over) ---");
+    for (int i = 0; i < 4; ++i) {
+        stateManager.update(1.0); // 1-second simulation step per tick
+    }
+
+    LOG_INFO("\n--- 4. TRANSITIONING GAME OVER -> PLAYING (Restart) ---");
+    stateManager.changeState(GameState::Playing);
+
+    LOG_INFO("\n--- 5. TRANSITIONING PLAYING -> PAUSED ---");
+    stateManager.changeState(GameState::Paused);
+
+    LOG_INFO("\n--- 6. TRANSITIONING PAUSED -> MAIN MENU ---");
+    stateManager.changeState(GameState::Menu);
+
     LOG_INFO("==========================================================================");
 }
 
@@ -375,6 +415,7 @@ int main(int argc, char* argv[]) {
     bool isProfilerDemo = false;
     bool isMathDemo = false;
     bool isInputDemo = false;
+    bool isStateDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -416,6 +457,8 @@ int main(int argc, char* argv[]) {
             isMathDemo = true;
         } else if (std::strcmp(argv[i], "--input") == 0) {
             isInputDemo = true;
+        } else if (std::strcmp(argv[i], "--state") == 0) {
+            isStateDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -471,6 +514,11 @@ int main(int argc, char* argv[]) {
 
     if (isInputDemo) {
         runInputDemo();
+        return 0;
+    }
+
+    if (isStateDemo) {
+        runStateDemo();
         return 0;
     }
 

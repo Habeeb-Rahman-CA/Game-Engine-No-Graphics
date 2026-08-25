@@ -15,6 +15,8 @@ set(ENGINE_SOURCES
     src/Core/Input.cpp
     src/Input/TerminalInputBackend.cpp
     src/Input/Input.cpp
+    src/State/StateManager.cpp
+    src/State/ConcreteStates.cpp
     src/World/World.cpp
     src/System/MovementSystem.cpp
     src/System/PhysicsSystem.cpp
