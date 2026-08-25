@@ -1,0 +1,43 @@
+# Build Directories & Compilation Artifacts
+build/
+bin/
+out/
+dist/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile.cmake
+compile_commands.json
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Executables
+game_engine
+engine_tests
+engine_benchmarks
+
+# Saved Runtime / Temporary Output Files
+saved_level.json
+test_saved.json
+
+# Profiling & Diagnostics
+perf.data
+perf.data.old
+gmon.out
+
+# IDEs & Editor Artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
