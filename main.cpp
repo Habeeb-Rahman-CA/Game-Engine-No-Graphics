@@ -689,6 +689,36 @@ void runSpriteDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Audio/Audio.hpp"
+
+void runAudioDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   AUDIO SUBSYSTEM DEMONSTRATION                          ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::AudioSystem;
+
+    Audio::init();
+
+    LOG_INFO("\n--- 1. BACKGROUND MUSIC PLAYBACK ---");
+    Audio::play_music("level1.ogg", 0.8f, true);
+
+    LOG_INFO("\n--- 2. GAMEPLAY SOUND EFFECTS ---");
+    Audio::play_sound("jump.wav", 1.0f);
+    Audio::play_sound("coin_collect.wav", 0.7f);
+
+    LOG_INFO("\n--- 3. MASTER VOLUME ADJUSTMENT ---");
+    Audio::set_master_volume(0.5f);
+    Audio::play_sound("explosion.wav", 1.0f);
+
+    LOG_INFO("\n--- 4. MUSIC TRACK SWITCHING ---");
+    Audio::play_music("boss_battle.ogg", 1.0f, true);
+    Audio::stop_music();
+
+    Audio::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -707,6 +737,7 @@ int main(int argc, char* argv[]) {
     bool isRenderDemo = false;
     bool isCameraDemo = false;
     bool isSpriteDemo = false;
+    bool isAudioDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -760,6 +791,8 @@ int main(int argc, char* argv[]) {
             isCameraDemo = true;
         } else if (std::strcmp(argv[i], "--sprite") == 0) {
             isSpriteDemo = true;
+        } else if (std::strcmp(argv[i], "--audio") == 0) {
+            isAudioDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -845,6 +878,11 @@ int main(int argc, char* argv[]) {
 
     if (isSpriteDemo) {
         runSpriteDemo();
+        return 0;
+    }
+
+    if (isAudioDemo) {
+        runAudioDemo();
         return 0;
     }
 

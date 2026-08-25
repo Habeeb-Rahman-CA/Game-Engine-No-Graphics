@@ -11,6 +11,7 @@ SOURCES = main.cpp \
           src/Input/Input.cpp \
           src/Renderer/Renderer.cpp \
           src/Renderer/TerminalCanvasRenderer.cpp \
+          src/Audio/Audio.cpp \
           src/State/StateManager.cpp \
           src/State/ConcreteStates.cpp \
           src/World/World.cpp \
@@ -97,10 +98,13 @@ test-camera: $(TARGET)
 test-sprite: $(TARGET)
 	./$(TARGET) --sprite
 
+test-audio: $(TARGET)
+	./$(TARGET) --audio
+
 perf-profile: $(TARGET)
 	perf stat ./$(TARGET) --frames 500 --fps 120
 
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics test-render test-camera test-sprite perf-profile clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 test-phase5 test-phase6 test-phase7 test-phase8 test-phase9 test-profiler test-math test-input test-state test-collision test-physics test-render test-camera test-sprite test-audio perf-profile clean

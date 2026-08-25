@@ -17,6 +17,7 @@ set(ENGINE_SOURCES
     src/Input/Input.cpp
     src/Renderer/Renderer.cpp
     src/Renderer/TerminalCanvasRenderer.cpp
+    src/Audio/Audio.cpp
     src/State/StateManager.cpp
     src/State/ConcreteStates.cpp
     src/World/World.cpp
