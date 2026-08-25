@@ -37,6 +37,7 @@ SOURCES = main.cpp \
           src/Platform/Platform.cpp \
           src/Renderer/WindowCanvasRenderer.cpp \
           src/Renderer/GPU2DRenderer.cpp \
+          src/Physics/SpatialGrid.cpp \
           src/Editor/Editor.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))

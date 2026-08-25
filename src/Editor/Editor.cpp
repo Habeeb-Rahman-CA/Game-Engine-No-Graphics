@@ -145,9 +145,13 @@ void Editor::duplicate_selected_entity() {
 }
 
 void Editor::run_memory_benchmark() {
-    LOG_INFO("Executing Engine Memory Benchmark Tool (100,000 allocations)...");
+    LOG_INFO("Executing Engine Memory & Spatial Partitioning Benchmarks (100,000 entities)...");
     m_benchmarkResults = Memory::MemoryBenchmark::runBenchmark(100000);
     m_hasBenchmarkResults = true;
+
+    m_spatialSuite = Physics::SpatialGrid::runBenchmarkSuite();
+    m_hasSpatialBenchmark = true;
+
     m_bottomTab = 2; // Switch to Benchmark view
 }
 
@@ -952,24 +956,52 @@ void Editor::render_asset_browser() {
 void Editor::render_benchmark_panel() {
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(512, 565), Vec2(1024, 130)), Color(16, 18, 24), true);
 
-    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(90, 532), Vec2(140, 24)), Color(46, 204, 113), true);
-    m_renderer->draw_text("RUN BENCHMARK", Vec2(26, 526), Color::White);
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(80, 528), Vec2(130, 22)), Color(46, 204, 113), true);
+    m_renderer->draw_text("RUN BENCHMARKS", Vec2(20, 523), Color::White);
 
-    m_renderer->draw_text("ENGINE MEMORY ALLOCATOR BENCHMARK TOOL", Vec2(180, 512), Color(241, 196, 15));
+    m_renderer->draw_text("MEMORY ALLOCATORS", Vec2(170, 510), Color(241, 196, 15));
+    m_renderer->draw_text("SPATIAL PARTITIONING (BRUTE FORCE VS SPATIAL GRID)", Vec2(480, 510), Color(52, 152, 219));
+
+    m_renderer->draw_line(Vec2(460, 500), Vec2(460, 630), Color(45, 52, 70));
 
     if (m_hasBenchmarkResults) {
         std::stringstream ssMalloc, ssArena, ssPool, ssArenaSpd, ssPoolSpd;
         ssMalloc  << std::fixed << std::setprecision(2) << m_benchmarkResults.mallocTimeMs << " MS";
         ssArena   << std::fixed << std::setprecision(2) << m_benchmarkResults.arenaTimeMs  << " MS";
         ssPool    << std::fixed << std::setprecision(2) << m_benchmarkResults.poolTimeMs   << " MS";
-        ssArenaSpd<< std::fixed << std::setprecision(1) << m_benchmarkResults.arenaSpeedup << "X SPEEDUP";
-        ssPoolSpd << std::fixed << std::setprecision(1) << m_benchmarkResults.poolSpeedup  << "X SPEEDUP";
+        ssArenaSpd<< std::fixed << std::setprecision(1) << m_benchmarkResults.arenaSpeedup << "X";
+        ssPoolSpd << std::fixed << std::setprecision(1) << m_benchmarkResults.poolSpeedup  << "X";
 
-        m_renderer->draw_text("MALLOC TIME: " + ssMalloc.str(), Vec2(180, 538), Color(231, 76, 60));
-        m_renderer->draw_text("ARENA ALLOCATOR: " + ssArena.str() + " (" + ssArenaSpd.str() + ")", Vec2(180, 562), Color(46, 204, 113));
-        m_renderer->draw_text("POOL ALLOCATOR : " + ssPool.str()  + " (" + ssPoolSpd.str()  + ")", Vec2(180, 586), Color(52, 152, 219));
+        m_renderer->draw_text("MALLOC TIME: " + ssMalloc.str(), Vec2(16, 554), Color(231, 76, 60));
+        m_renderer->draw_text("ARENA ALLOC: " + ssArena.str() + " (" + ssArenaSpd.str() + " SPD)", Vec2(16, 576), Color(46, 204, 113));
+        m_renderer->draw_text("POOL  ALLOC: " + ssPool.str()  + " (" + ssPoolSpd.str()  + " SPD)", Vec2(16, 598), Color(52, 152, 219));
     } else {
-        m_renderer->draw_text("CLICK 'RUN BENCHMARK' TO EXECUTE 100,000 MEMORY ALLOCATIONS TEST", Vec2(180, 550), Color(180, 190, 200));
+        m_renderer->draw_text("CLICK 'RUN BENCHMARKS'", Vec2(16, 560), Color(180, 190, 200));
+        m_renderer->draw_text("TO TEST 100K ALLOCS", Vec2(16, 582), Color(180, 190, 200));
+    }
+
+    if (m_hasSpatialBenchmark) {
+        int rowY = 530;
+        m_renderer->draw_text("ENTITIES | BRUTE FORCE | SPATIAL GRID | SPEEDUP", Vec2(480, rowY), Color(180, 190, 210));
+
+        for (size_t i = 0; i < m_spatialSuite.results.size(); ++i) {
+            const auto& res = m_spatialSuite.results[i];
+            rowY += 20;
+
+            std::stringstream ssBrute, ssGrid, ssSpd;
+            ssBrute << std::fixed << std::setprecision(1) << res.bruteForceTimeMs << "ms";
+            ssGrid  << std::fixed << std::setprecision(1) << res.spatialGridTimeMs << "ms";
+            ssSpd   << std::fixed << std::setprecision(1) << res.speedup << "x";
+
+            std::string nStr = std::to_string(res.entityCount);
+            while (nStr.size() < 8) nStr += " ";
+
+            std::string line = nStr + " | " + ssBrute.str() + " | " + ssGrid.str() + " | " + ssSpd.str();
+            m_renderer->draw_text(line, Vec2(480, rowY), (i == 3) ? Color(46, 204, 113) : Color::White);
+        }
+    } else {
+        m_renderer->draw_text("SPATIAL GRID BENCHMARK SUITE UNTESTED", Vec2(480, 550), Color(180, 190, 200));
+        m_renderer->draw_text("TESTS 1,000 / 10,000 / 50,000 / 100,000 ENTITIES O(N^2) VS O(N)", Vec2(480, 575), Color(120, 130, 150));
     }
 }
 

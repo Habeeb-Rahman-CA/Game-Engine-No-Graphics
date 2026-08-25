@@ -9,6 +9,7 @@
 #include "Scene/SceneSerializer.hpp"
 #include "Debug/DebugRenderer.hpp"
 #include "Memory/MemoryBenchmark.hpp"
+#include "Physics/SpatialGrid.hpp"
 
 #include <memory>
 #include <string>
@@ -93,9 +94,12 @@ private:
         "game.cfg"
     };
 
-    // Benchmark Results (MemoryBenchmark Integration)
+    // Benchmark Results (MemoryBenchmark & SpatialGrid Integration)
     bool m_hasBenchmarkResults = false;
     Memory::BenchmarkResults m_benchmarkResults;
+
+    bool m_hasSpatialBenchmark = false;
+    Physics::SpatialBenchmarkSuite m_spatialSuite;
 
     // Entity Renaming State
     bool m_isRenamingEntity = false;
