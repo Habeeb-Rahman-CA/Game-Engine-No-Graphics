@@ -38,6 +38,10 @@ public:
     size_t get_entity_count() const { return m_entities.size(); }
     const std::vector<Entity>& get_entities() const { return m_entities; }
 
+    // Scene Serialization & Deserialization
+    bool load_scene(const std::string& filePath);
+    bool save_scene(const std::string& filePath);
+
     // Component Management
     void add_transform(Entity e, const Transform& t);
     void add_velocity(Entity e, const Velocity& v);

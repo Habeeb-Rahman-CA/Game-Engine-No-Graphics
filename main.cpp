@@ -765,6 +765,44 @@ void runDebugToolsDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Scene/SceneSerializer.hpp"
+
+void runSceneDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                   SCENE SERIALIZATION DEMONSTRATION                      ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::WorldSystem;
+    using namespace Engine::EntitySystem;
+
+    World world;
+
+    LOG_INFO("\n--- 1. DESERIALIZING SCENE FILE ('level1.json') ---");
+    if (!world.load_scene("level1.json")) {
+        LOG_ERROR("Failed to load level1.json!");
+        return;
+    }
+
+    LOG_INFO("\n--- 2. INSPECTING LOADED WORLD ENTITIES & COMPONENTS ---");
+    for (Entity e : world.get_entities()) {
+        auto* transform = world.get_transform(e);
+        auto* velocity  = world.get_velocity(e);
+        auto* health    = world.get_health(e);
+        auto* sprite    = world.get_sprite(e);
+
+        LOG_INFO("Entity ID: " + std::to_string(e) + " ('" + world.get_name(e) + "')");
+        if (transform) LOG_INFO("  - Position: " + transform->position.toString());
+        if (velocity)  LOG_INFO("  - Velocity: " + velocity->value.toString());
+        if (health)    LOG_INFO("  - Health  : " + std::to_string(health->value) + "/" + std::to_string(health->maxHp));
+        if (sprite)    LOG_INFO("  - Sprite  : " + sprite->textureId + " [" + sprite->size.toString() + "]");
+    }
+
+    LOG_INFO("\n--- 3. SERIALIZING WORLD TO DISK ('saved_level.json') ---");
+    world.save_scene("saved_level.json");
+
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -785,6 +823,7 @@ int main(int argc, char* argv[]) {
     bool isSpriteDemo = false;
     bool isAudioDemo = false;
     bool isDebugToolsDemo = false;
+    bool isSceneDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -842,6 +881,8 @@ int main(int argc, char* argv[]) {
             isAudioDemo = true;
         } else if (std::strcmp(argv[i], "--debug-tools") == 0) {
             isDebugToolsDemo = true;
+        } else if (std::strcmp(argv[i], "--scene") == 0) {
+            isSceneDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -937,6 +978,11 @@ int main(int argc, char* argv[]) {
 
     if (isDebugToolsDemo) {
         runDebugToolsDemo();
+        return 0;
+    }
+
+    if (isSceneDemo) {
+        runSceneDemo();
         return 0;
     }
 

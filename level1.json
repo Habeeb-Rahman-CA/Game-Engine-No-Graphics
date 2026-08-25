@@ -1,0 +1,18 @@
+{
+  "scene": "Level 1 - Dungeon Entry",
+  "entities": [
+    {
+      "name": "Player",
+      "transform": { "x": 10.0, "y": 5.0, "z": 0.0 },
+      "velocity": { "x": 2.5, "y": 0.0 },
+      "health": { "current": 100, "max": 100 },
+      "sprite": { "textureId": "player_hero", "width": 4.0, "height": 4.0 }
+    },
+    {
+      "name": "Enemy_Goblin",
+      "transform": { "x": 35.0, "y": 5.0, "z": 0.0 },
+      "health": { "current": 45, "max": 50 },
+      "sprite": { "textureId": "goblin_enemy", "width": 3.0, "height": 3.0 }
+    }
+  ]
+}

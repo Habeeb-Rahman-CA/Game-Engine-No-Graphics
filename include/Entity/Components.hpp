@@ -54,8 +54,9 @@ struct RigidBody2D {
 
 struct Health {
     int value = 100;
+    int maxHp = 100;
 
-    Health(int hp = 100) : value(hp) {}
+    Health(int hp = 100, int max = 100) : value(hp), maxHp(max) {}
     bool isAlive() const { return value > 0; }
 };
 

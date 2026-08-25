@@ -1,4 +1,5 @@
 #include "World/World.hpp"
+#include "Scene/SceneSerializer.hpp"
 #include "Debug/Logger.hpp"
 #include "Debug/Profiler.hpp"
 #include <algorithm>
@@ -9,6 +10,14 @@ namespace Engine {
 namespace WorldSystem {
 
 World::World() : m_nextEntityId(1) {}
+
+bool World::load_scene(const std::string& filePath) {
+    return Engine::SceneSystem::SceneSerializer::load_scene(*this, filePath);
+}
+
+bool World::save_scene(const std::string& filePath) {
+    return Engine::SceneSystem::SceneSerializer::save_scene(*this, filePath);
+}
 
 Entity World::create_entity(const std::string& name) {
     Entity id = m_nextEntityId++;

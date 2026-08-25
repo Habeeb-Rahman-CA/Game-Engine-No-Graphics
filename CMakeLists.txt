@@ -35,6 +35,7 @@ set(ENGINE_SOURCES
     src/Debug/Profiler.cpp
     src/Debug/Logger.cpp
     src/Debug/DebugRenderer.cpp
+    src/Scene/SceneSerializer.cpp
 )
 
 # Engine library
