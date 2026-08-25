@@ -81,9 +81,7 @@ void World::update(double dt) {
         Velocity* velocity = get_velocity(e);
 
         if (transform && velocity) {
-            transform->x += velocity->vx * dt;
-            transform->y += velocity->vy * dt;
-            transform->z += velocity->vz * dt;
+            transform->position += velocity->value * dt;
         }
     }
 }
@@ -96,19 +94,19 @@ void World::print_world_state() const {
 
         auto tIt = m_transforms.find(e);
         if (tIt != m_transforms.end()) {
-            ss << std::fixed << std::setprecision(2);
-            ss << " | Transform(pos: " << tIt->second.x << ", " << tIt->second.y << ", " << tIt->second.z << ")";
+            ss << " | Transform(pos: " << tIt->second.position.toString()
+               << ", rot: " << tIt->second.rotation.toString()
+               << ", scale: " << tIt->second.scale.toString() << ")";
         }
 
         auto vIt = m_velocities.find(e);
         if (vIt != m_velocities.end()) {
-            ss << std::fixed << std::setprecision(2);
-            ss << " | Velocity(vel: " << vIt->second.vx << ", " << vIt->second.vy << ", " << vIt->second.vz << ")";
+            ss << " | Velocity(" << vIt->second.value.toString() << ")";
         }
 
         auto hIt = m_healths.find(e);
         if (hIt != m_healths.end()) {
-            ss << " | Health(" << hIt->second.current << "/" << hIt->second.max << " HP)";
+            ss << " | Health(" << hIt->second.value << " HP)";
         }
 
         LOG_INFO(ss.str());

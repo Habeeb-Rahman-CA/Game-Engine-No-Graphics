@@ -80,10 +80,35 @@ void runPhase4Demo() {
     engine.getWorld().print_world_state();
 }
 
+void runPhase5Demo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("       PHASE 5 DEMO: COMPONENT ARCHETYPES (Player, Bullet, Wall)          ");
+    LOG_INFO("==========================================================================");
+
+    Engine::Core::EngineConfig config;
+    config.targetFps = 60.0;
+    config.fixedDeltaTime = 1.0 / 60.0;
+    config.maxFramesToRun = 3;
+    config.showStats = false;
+
+    Engine::Core::Engine engine(config);
+    engine.initialize();
+
+    LOG_INFO("\n=== INITIAL COMPONENT ARCHETYPE STATES ===");
+    engine.getWorld().print_world_state();
+
+    LOG_INFO("\n=== SIMULATING MOVEMENT TICK FOR 3 FRAMES ===");
+    engine.run();
+
+    LOG_INFO("\n=== FINAL COMPONENT ARCHETYPE STATES ===");
+    engine.getWorld().print_world_state();
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
     bool isPhase4Demo = false;
+    bool isPhase5Demo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -109,6 +134,8 @@ int main(int argc, char* argv[]) {
             isPhase3Demo = true;
         } else if (std::strcmp(argv[i], "--phase4") == 0) {
             isPhase4Demo = true;
+        } else if (std::strcmp(argv[i], "--phase5") == 0) {
+            isPhase5Demo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -124,6 +151,11 @@ int main(int argc, char* argv[]) {
 
     if (isPhase4Demo) {
         runPhase4Demo();
+        return 0;
+    }
+
+    if (isPhase5Demo) {
+        runPhase5Demo();
         return 0;
     }
 

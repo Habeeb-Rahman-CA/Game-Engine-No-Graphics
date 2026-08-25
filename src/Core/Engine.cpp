@@ -38,27 +38,28 @@ bool Engine::initialize() {
     m_time.init();
     m_input.init();
 
-    // Phase 4: Create World Entities if none exist
+    // Phase 5: Create World Entities matching Component Archetypes
     if (m_world.get_entity_count() == 0) {
-        LOG_INFO("Initializing World Entities...");
+        LOG_INFO("Initializing Phase 5 Component Archetype Entities...");
         
         using namespace WorldSystem;
+        using namespace EntitySystem;
+        using Vec3 = ::Engine::Math::Vec3;
 
-        // Entity 1: Player (Transform + Velocity + Health)
+        // Player: Transform + Velocity + Health
         Entity player = m_world.create_entity("Player");
-        m_world.add_transform(player, Transform(0.0, 0.0, 0.0));
-        m_world.add_velocity(player, Velocity(5.0, 0.0, 0.0));
-        m_world.add_health(player, Health(100.0f, 100.0f));
+        m_world.add_transform(player, Transform(Vec3(0.0, 0.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(1.0, 1.0, 1.0)));
+        m_world.add_velocity(player, Velocity(Vec3(2.5, 0.0, 0.0)));
+        m_world.add_health(player, Health(100));
 
-        // Entity 2: Enemy (Transform + Velocity + Health)
-        Entity enemy = m_world.create_entity("Enemy");
-        m_world.add_transform(enemy, Transform(10.0, 0.0, 0.0));
-        m_world.add_velocity(enemy, Velocity(-2.0, 0.0, 0.0));
-        m_world.add_health(enemy, Health(50.0f, 50.0f));
+        // Bullet: Transform + Velocity (no Health)
+        Entity bullet = m_world.create_entity("Bullet");
+        m_world.add_transform(bullet, Transform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(0.1, 0.1, 0.1)));
+        m_world.add_velocity(bullet, Velocity(Vec3(50.0, 0.0, 0.0)));
 
-        // Entity 3: Static Obstacle (Transform only)
-        Entity obstacle = m_world.create_entity("Obstacle");
-        m_world.add_transform(obstacle, Transform(20.0, 5.0, 0.0));
+        // Wall: Transform (no Velocity, no Health)
+        Entity wall = m_world.create_entity("Wall");
+        m_world.add_transform(wall, Transform(Vec3(100.0, 0.0, 0.0), Vec3(0.0, 0.0, 0.0), Vec3(2.0, 10.0, 1.0)));
     }
 
     m_state = EngineState::Running;

@@ -1,41 +1,36 @@
 #ifndef ENTITY_COMPONENTS_HPP
 #define ENTITY_COMPONENTS_HPP
 
+#include "Math/Vec3.hpp"
 #include <string>
 
 namespace Engine {
 namespace EntitySystem {
 
-struct Transform {
-    double x = 0.0;
-    double y = 0.0;
-    double z = 0.0;
-    double rotX = 0.0;
-    double rotY = 0.0;
-    double rotZ = 0.0;
+using Vec3 = Math::Vec3;
 
-    Transform(double px = 0.0, double py = 0.0, double pz = 0.0)
-        : x(px), y(py), z(pz) {}
+struct Transform {
+    Vec3 position;
+    Vec3 rotation;
+    Vec3 scale;
+
+    Transform(Vec3 pos = Vec3(0.0, 0.0, 0.0), 
+              Vec3 rot = Vec3(0.0, 0.0, 0.0), 
+              Vec3 scl = Vec3(1.0, 1.0, 1.0))
+        : position(pos), rotation(rot), scale(scl) {}
 };
 
 struct Velocity {
-    double vx = 0.0;
-    double vy = 0.0;
-    double vz = 0.0;
+    Vec3 value;
 
-    Velocity(double velX = 0.0, double velY = 0.0, double velZ = 0.0)
-        : vx(velX), vy(velY), vz(velZ) {}
+    Velocity(Vec3 vel = Vec3(0.0, 0.0, 0.0)) : value(vel) {}
 };
 
 struct Health {
-    float current = 100.0f;
-    float max = 100.0f;
+    int value = 100;
 
-    Health(float hp = 100.0f, float maxHp = 100.0f)
-        : current(hp), max(maxHp) {}
-
-    bool isAlive() const { return current > 0.0f; }
-    float getPercentage() const { return max > 0.0f ? (current / max) * 100.0f : 0.0f; }
+    Health(int hp = 100) : value(hp) {}
+    bool isAlive() const { return value > 0; }
 };
 
 struct NameTag {
