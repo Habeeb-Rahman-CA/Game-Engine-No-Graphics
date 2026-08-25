@@ -10,6 +10,8 @@ void printHelp(const char* progName) {
               << "  --frames <N>      Run for N frames then cleanly shutdown (0 = infinite) [default: 0]\n"
               << "  --fps <N>         Set target FPS [default: 60]\n"
               << "  --fixed-hz <N>    Set fixed update rate in Hz [default: 60]\n"
+              << "  --log-deltas      Log per-frame delta_time values (Phase 2 demo)\n"
+              << "  --phase2          Run Phase 2 Time System demonstration (5 frames with delta_time logging)\n"
               << "  --no-stats        Disable periodic render statistics printing\n"
               << "  --help, -h        Show this help message\n";
 }
@@ -27,6 +29,12 @@ int main(int argc, char* argv[]) {
             if (hz > 0.0) {
                 config.fixedDeltaTime = 1.0 / hz;
             }
+        } else if (std::strcmp(argv[i], "--log-deltas") == 0) {
+            config.logFrameDeltas = true;
+        } else if (std::strcmp(argv[i], "--phase2") == 0) {
+            config.maxFramesToRun = 5;
+            config.logFrameDeltas = true;
+            config.showStats = false;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {

@@ -15,7 +15,16 @@ public:
     bool checkFixedUpdate();
     void sleepIfNecessary();
 
-    // Getters
+    // =========================================================================
+    // PHASE 2 TIME SYSTEM MODULE ATTRIBUTES
+    // Time: delta_time, total_time, frame_count, FPS
+    // =========================================================================
+    double delta_time() const { return m_deltaTime; }
+    double total_time() const { return m_totalTime; }
+    unsigned long long frame_count() const { return m_frameCount; }
+    double FPS() const { return m_fps; }
+
+    // Standard CamelCase getters
     double deltaTime() const { return m_deltaTime; }
     double fixedDeltaTime() const { return m_fixedDeltaTime; }
     double totalTime() const { return m_totalTime; }

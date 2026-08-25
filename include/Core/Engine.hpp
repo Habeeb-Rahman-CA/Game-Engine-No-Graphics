@@ -14,6 +14,7 @@ struct EngineConfig {
     double fixedDeltaTime = 1.0 / 60.0;
     uint64_t maxFramesToRun = 0; // 0 = infinite (run until quit)
     bool showStats = true;
+    bool logFrameDeltas = false; // Phase 2: Log per-frame delta time details
     double statsIntervalSeconds = 1.0;
 };
 

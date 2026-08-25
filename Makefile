@@ -27,7 +27,10 @@ run: $(TARGET)
 test: $(TARGET)
 	./$(TARGET) --frames 180 --fps 60
 
+test-phase2: $(TARGET)
+	./$(TARGET) --phase2
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test clean
+.PHONY: all run test test-phase2 clean

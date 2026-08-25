@@ -103,9 +103,16 @@ void Engine::processInput() {
 }
 
 void Engine::update(double dt) {
-    // Variable time step update logic
-    // In future phases, system updates (movement, animations, audio) execute here.
-    (void)dt;
+    // Variable time step update logic: update(delta_time)
+    if (m_config.logFrameDeltas) {
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(6);
+        ss << "Frame " << m_time.frame_count() 
+           << " | delta = " << dt 
+           << " s | total_time = " << std::setprecision(4) << m_time.total_time() << " s"
+           << " | FPS = " << std::setprecision(1) << m_time.FPS();
+        LOG_INFO(ss.str());
+    }
 }
 
 void Engine::fixedUpdate(double fixedDt) {
@@ -164,7 +171,7 @@ void Engine::run() {
         m_time.update();
 
         // Step 2: Check max frame limit if configured
-        if (m_config.maxFramesToRun > 0 && m_time.frameCount() >= m_config.maxFramesToRun) {
+        if (m_config.maxFramesToRun > 0 && m_time.frameCount() > m_config.maxFramesToRun) {
             LOG_INFO("Reached target max frame count (" + std::to_string(m_config.maxFramesToRun) + "). Requesting shutdown.");
             requestShutdown();
             break;
