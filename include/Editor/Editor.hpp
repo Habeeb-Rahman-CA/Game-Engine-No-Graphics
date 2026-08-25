@@ -10,6 +10,7 @@
 #include "Debug/DebugRenderer.hpp"
 #include "Memory/MemoryBenchmark.hpp"
 #include "Physics/SpatialGrid.hpp"
+#include "UI/HUDSystem.hpp"
 
 #include <memory>
 #include <string>
@@ -67,12 +68,14 @@ private:
     WorldSystem::World m_world;
     EventSystem::EventBus m_eventBus;
     RenderSystem::Camera2D m_viewportCamera;
+    UISystem::HUDSystem* m_hudSystem = nullptr;
 
     // Editor State
     EditorMode m_mode = EditorMode::Edit;
     WorldSystem::Entity m_selectedEntity = 0;
     bool m_hasSelection = false;
     bool m_isDraggingInViewport = false;
+    bool m_showHUDOverlay = true;
     int m_lastDragMx = 0;
     int m_lastDragMy = 0;
 

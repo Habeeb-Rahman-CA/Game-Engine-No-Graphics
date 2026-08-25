@@ -62,6 +62,10 @@ bool Editor::initialize(int width, int height) {
     m_world.add_system(std::make_unique<System::AISystem>());
     m_world.add_system(std::make_unique<System::AnimationSystem>());
 
+    auto hudSystem = std::make_unique<UISystem::HUDSystem>();
+    m_hudSystem = hudSystem.get();
+    m_world.add_system(std::move(hudSystem));
+
     auto gameplaySystem = std::make_unique<System::GameplaySystem>(&m_eventBus);
     gameplaySystem->setWorld(&m_world);
     m_world.add_system(std::move(gameplaySystem));
@@ -252,93 +256,104 @@ void Editor::handle_mouse_click(int mx, int my) {
         return;
     }
 
-    // 1. TOP BAR CLICK
-    if (m_rectTopBar.contains(mx, my)) {
-        if (mx >= 10 && mx <= 50) {
-            m_showFileMenu = !m_showFileMenu;
-            m_showEditMenu = m_showSceneMenu = false;
-        } else if (mx >= 60 && mx <= 100) {
-            m_showEditMenu = !m_showEditMenu;
-            m_showFileMenu = m_showSceneMenu = false;
-        } else if (mx >= 110 && mx <= 160) {
-            m_showSceneMenu = !m_showSceneMenu;
-            m_showFileMenu = m_showEditMenu = false;
-        } else if (mx >= 170 && mx <= 210) {
-            m_showHelpModal = true;
-            m_showFileMenu = m_showEditMenu = m_showSceneMenu = false;
-        } else if (mx >= 440 && mx <= 500 && my >= 6 && my <= 30) {
-            m_mode = EditorMode::Play;
-            LOG_INFO("=== [SIMULATION] PLAY MODE STARTED ===");
-        } else if (mx >= 510 && mx <= 570 && my >= 6 && my <= 30) {
-            m_mode = EditorMode::Pause;
-            LOG_INFO("=== [SIMULATION] PAUSED ===");
-        } else if (mx >= 580 && mx <= 630 && my >= 6 && my <= 30) {
-            m_mode = EditorMode::Edit;
-            LOG_INFO("=== [SIMULATION] STOPPED & RESET ===");
-        }
-        return;
-    }
-
-    // Top Bar Dropdowns
+    // 1. Check Active Dropdown Menu Clicks FIRST
     if (m_showFileMenu) {
-        if (mx >= 10 && mx <= 150) {
+        if (mx >= 10 && mx <= 160 && my >= 36 && my < 132) {
             if (my >= 36 && my < 60) {
                 create_default_scene();
             } else if (my >= 60 && my < 84) {
                 m_world.load_scene("level1.json");
+                LOG_INFO("Scene Loaded: level1.json");
             } else if (my >= 84 && my < 108) {
                 m_world.save_scene("saved_level.json");
+                LOG_INFO("Scene Saved: saved_level.json");
             } else if (my >= 108 && my < 132) {
                 m_window.close();
             }
+            m_showFileMenu = false;
+            return;
         }
         m_showFileMenu = false;
-        return;
     }
 
     if (m_showEditMenu) {
-        if (mx >= 60 && mx <= 210) {
+        if (mx >= 60 && mx <= 210 && my >= 36 && my < 132) {
             if (my >= 36 && my < 60) {
                 auto newEnt = m_world.create_entity("New_Object");
                 m_world.add_transform(newEnt, Transform(Vec3(0,0,0)));
                 m_world.add_sprite(newEnt, Sprite("box", Vec2(2,2)));
                 select_entity(newEnt);
+                LOG_INFO("Created New Object");
             } else if (my >= 60 && my < 84) {
                 duplicate_selected_entity();
             } else if (my >= 84 && my < 108) {
                 if (m_hasSelection) {
                     m_world.destroy_entity(m_selectedEntity);
                     m_hasSelection = false;
+                    LOG_INFO("Selected Entity Deleted");
                 }
             } else if (my >= 108 && my < 132) {
                 m_hasSelection = false;
+                LOG_INFO("Deselected All Entities");
             }
+            m_showEditMenu = false;
+            return;
         }
         m_showEditMenu = false;
-        return;
     }
 
     if (m_showSceneMenu) {
-        if (mx >= 110 && mx <= 260) {
+        if (mx >= 110 && mx <= 260 && my >= 36 && my < 108) {
             if (my >= 36 && my < 60) {
                 auto p = m_world.create_entity("Player_Hero");
                 m_world.add_transform(p, Transform(Vec3(0,0,0)));
                 m_world.add_sprite(p, Sprite("player_hero", Vec2(2.5,4)));
                 m_world.add_health(p, Health(100, 100));
                 select_entity(p);
+                LOG_INFO("Spawned Player Hero");
             } else if (my >= 60 && my < 84) {
                 auto e = m_world.create_entity("Orc_Warrior");
                 m_world.add_transform(e, Transform(Vec3(4,3,0)));
                 m_world.add_sprite(e, Sprite("enemy_orc", Vec2(2.5,2.5)));
                 m_world.add_ai(e, EnemyAI(AIState::Patrol));
                 select_entity(e);
+                LOG_INFO("Spawned Orc Warrior");
             } else if (my >= 84 && my < 108) {
                 auto c = m_world.create_entity("Main_Camera");
                 m_world.add_transform(c, Transform(Vec3(0,0,0)));
                 select_entity(c);
+                LOG_INFO("Spawned Main Camera");
             }
+            m_showSceneMenu = false;
+            return;
         }
         m_showSceneMenu = false;
+    }
+
+    // 2. TOP BAR CLICK
+    if (m_rectTopBar.contains(mx, my)) {
+        if (mx >= 5 && mx <= 55) {
+            m_showFileMenu = true;
+            m_showEditMenu = m_showSceneMenu = false;
+        } else if (mx > 55 && mx <= 105) {
+            m_showEditMenu = true;
+            m_showFileMenu = m_showSceneMenu = false;
+        } else if (mx > 105 && mx <= 165) {
+            m_showSceneMenu = true;
+            m_showFileMenu = m_showEditMenu = false;
+        } else if (mx > 165 && mx <= 225) {
+            m_showHelpModal = true;
+            m_showFileMenu = m_showEditMenu = m_showSceneMenu = false;
+        } else if (mx >= 440 && mx <= 500 && my >= 4 && my <= 32) {
+            m_mode = EditorMode::Play;
+            LOG_INFO("=== [SIMULATION] PLAY MODE STARTED ===");
+        } else if (mx >= 510 && mx <= 570 && my >= 4 && my <= 32) {
+            m_mode = EditorMode::Pause;
+            LOG_INFO("=== [SIMULATION] PAUSED ===");
+        } else if (mx >= 580 && mx <= 630 && my >= 4 && my <= 32) {
+            m_mode = EditorMode::Edit;
+            LOG_INFO("=== [SIMULATION] STOPPED & RESET ===");
+        }
         return;
     }
 
@@ -375,19 +390,23 @@ void Editor::handle_mouse_click(int mx, int my) {
 
     // 3. VIEWPORT PANEL & DEBUG OVERLAY TOGGLES
     if (m_rectViewport.contains(mx, my)) {
-        // Debug Visualization Overlay Buttons in Viewport Header
+        // Debug Visualization Overlay & HUD Buttons in Viewport Header
         if (my >= 38 && my <= 58) {
-            if (mx >= 540 && mx <= 610) {
+            if (mx >= 505 && mx <= 555) {
+                m_showHUDOverlay = !m_showHUDOverlay;
+                LOG_INFO(m_showHUDOverlay ? "In-Game HUD Overlay ON" : "In-Game HUD Overlay OFF");
+                return;
+            } else if (mx >= 565 && mx <= 630) {
                 m_showCollisionBoxes = !m_showCollisionBoxes;
                 DebugSystem::DebugRenderer::toggleCollisionBoxes();
                 LOG_INFO(m_showCollisionBoxes ? "Debug Colliders ON" : "Debug Colliders OFF");
                 return;
-            } else if (mx >= 615 && mx <= 675) {
+            } else if (mx >= 635 && mx <= 680) {
                 m_showEntityIds = !m_showEntityIds;
                 DebugSystem::DebugRenderer::toggleEntityIds();
                 LOG_INFO(m_showEntityIds ? "Debug Entity IDs ON" : "Debug Entity IDs OFF");
                 return;
-            } else if (mx >= 680 && mx <= 765) {
+            } else if (mx >= 685 && mx <= 760) {
                 m_showPhysicsVectors = !m_showPhysicsVectors;
                 DebugSystem::DebugRenderer::togglePhysicsVectors();
                 LOG_INFO(m_showPhysicsVectors ? "Debug Physics Vectors ON" : "Debug Physics Vectors OFF");
@@ -682,19 +701,22 @@ void Editor::render_viewport_panel() {
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(492, 258), Vec2(564, 444)), Color(18, 20, 28), true);
     m_renderer->draw_line(Vec2(774, 36), Vec2(774, 480), Color(45, 52, 70));
 
-    // Viewport Header Bar with DebugRenderer Overlays Toggle
+    // Viewport Header Bar with DebugRenderer Overlays & HUD Toggle
     m_renderer->draw_rect(AABB::fromCenterSize(Vec2(492, 48), Vec2(564, 24)), Color(30, 34, 46), true);
-    m_renderer->draw_text("VIEWPORT", Vec2(220, 42), Color(52, 152, 219));
+    m_renderer->draw_text("VIEWPORT", Vec2(215, 42), Color(52, 152, 219));
 
-    // DebugRenderer Toggle Buttons
-    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(575, 48), Vec2(65, 18)), m_showCollisionBoxes ? Color(46, 204, 113) : Color(52, 73, 94), true);
-    m_renderer->draw_text("BOXES", Vec2(548, 43), Color::White);
+    // DebugRenderer & HUD Toggle Buttons
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(530, 48), Vec2(50, 18)), m_showHUDOverlay ? Color(46, 204, 113) : Color(52, 73, 94), true);
+    m_renderer->draw_text("HUD", Vec2(514, 43), Color::White);
 
-    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(645, 48), Vec2(55, 18)), m_showEntityIds ? Color(46, 204, 113) : Color(52, 73, 94), true);
-    m_renderer->draw_text("IDs", Vec2(632, 43), Color::White);
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(595, 48), Vec2(65, 18)), m_showCollisionBoxes ? Color(46, 204, 113) : Color(52, 73, 94), true);
+    m_renderer->draw_text("BOXES", Vec2(568, 43), Color::White);
 
-    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(722, 48), Vec2(80, 18)), m_showPhysicsVectors ? Color(46, 204, 113) : Color(52, 73, 94), true);
-    m_renderer->draw_text("VECTORS", Vec2(687, 43), Color::White);
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(655, 48), Vec2(45, 18)), m_showEntityIds ? Color(46, 204, 113) : Color(52, 73, 94), true);
+    m_renderer->draw_text("IDs", Vec2(644, 43), Color::White);
+
+    m_renderer->draw_rect(AABB::fromCenterSize(Vec2(722, 48), Vec2(70, 18)), m_showPhysicsVectors ? Color(46, 204, 113) : Color(52, 73, 94), true);
+    m_renderer->draw_text("VECTORS", Vec2(692, 43), Color::White);
 
     int centerX = 492;
     int centerY = 258;
@@ -758,6 +780,11 @@ void Editor::render_viewport_panel() {
         if (m_hasSelection && m_selectedEntity == e) {
             m_renderer->draw_rect(AABB::fromCenterSize(Vec2(sx, sy), Vec2(w + 8, h + 8)), Color(241, 196, 15), false);
         }
+    }
+
+    // Render In-Game UI/HUD Overlay
+    if (m_showHUDOverlay && m_hudSystem) {
+        m_hudSystem->renderHUD(*m_renderer, 1024, 640);
     }
 }
 
