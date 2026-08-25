@@ -2,6 +2,7 @@
 #define RENDERER_RENDERER_HPP
 
 #include "Renderer/IRendererBackend.hpp"
+#include "Renderer/Camera2D.hpp"
 #include <memory>
 
 namespace Engine {
@@ -12,6 +13,9 @@ public:
     static bool init(int width = 80, int height = 24, const std::string& title = "Game Engine Window");
     static void setBackend(std::unique_ptr<IRendererBackend> backend);
     static IRendererBackend* getBackend();
+
+    static void setCamera(const Camera2D* camera);
+    static const Camera2D* getCamera();
 
     static void begin_frame();
     static void clear(const Color& color = Color::Black);
@@ -26,6 +30,7 @@ public:
 
 private:
     static std::unique_ptr<IRendererBackend> s_backend;
+    static const Camera2D* s_activeCamera;
 };
 
 } // namespace RenderSystem

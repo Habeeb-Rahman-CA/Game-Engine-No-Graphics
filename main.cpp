@@ -573,6 +573,63 @@ void runRenderDemo() {
     LOG_INFO("==========================================================================");
 }
 
+#include "Renderer/Camera2D.hpp"
+
+void runCameraDemo() {
+    LOG_INFO("==========================================================================");
+    LOG_INFO("                    2D CAMERA SUBSYSTEM DEMONSTRATION                     ");
+    LOG_INFO("==========================================================================");
+
+    using namespace Engine::RenderSystem;
+    using namespace Engine::Math;
+
+    Renderer::init(60, 15, "2D Camera World Viewport");
+
+    Camera2D camera(Vec2(0.0, 0.0), 1.0, Vec2(60.0, 15.0));
+    Renderer::setCamera(&camera);
+
+    Vec2 worldEntityPos(10.0, 5.0);
+    AABB worldBox = AABB::fromCenterSize(worldEntityPos, Vec2(6.0, 4.0));
+
+    LOG_INFO("\n--- 1. INITIAL CAMERA (Pos: 0.0, 0.0 | Zoom: 1.0x) ---");
+    Vec2 screenPos1 = camera.worldToScreen(worldEntityPos);
+    LOG_INFO("World Entity Pos (10.0, 5.0) -> Screen Pos: " + screenPos1.toString());
+
+    Renderer::begin_frame();
+    Renderer::clear(Color::Black);
+    Renderer::draw_rect(worldBox, Color::Green, true);
+    Renderer::draw_circle(Circle(Vec2(20.0, 5.0), 3.0), Color::Red, true);
+    Renderer::end_frame();
+
+    LOG_INFO("\n--- 2. PAN CAMERA TO FOLLOW PLAYER (Pos: 10.0, 5.0 | Zoom: 1.0x) ---");
+    camera.position = Vec2(10.0, 5.0);
+    Vec2 screenPos2 = camera.worldToScreen(worldEntityPos);
+    LOG_INFO("World Entity Pos (10.0, 5.0) centered -> Screen Pos: " + screenPos2.toString());
+
+    Renderer::begin_frame();
+    Renderer::clear(Color::Black);
+    Renderer::draw_rect(worldBox, Color::Green, true);
+    Renderer::draw_circle(Circle(Vec2(20.0, 5.0), 3.0), Color::Red, true);
+    Renderer::end_frame();
+
+    LOG_INFO("\n--- 3. ZOOM CAMERA IN (Pos: 10.0, 5.0 | Zoom: 2.0x) ---");
+    camera.zoom = 2.0;
+
+    Renderer::begin_frame();
+    Renderer::clear(Color::Black);
+    Renderer::draw_rect(worldBox, Color::Green, true);
+    Renderer::draw_circle(Circle(Vec2(20.0, 5.0), 3.0), Color::Red, true);
+    Renderer::end_frame();
+
+    LOG_INFO("\n--- 4. SCREEN-TO-WORLD CURSOR PICKING TRANSFORMATION ---");
+    Vec2 screenCursor(30.0, 7.5);
+    Vec2 pickedWorldPos = camera.screenToWorld(screenCursor);
+    LOG_INFO("Screen Click (30.0, 7.5) -> World Pick Position: " + pickedWorldPos.toString());
+
+    Renderer::shutdown();
+    LOG_INFO("==========================================================================");
+}
+
 int main(int argc, char* argv[]) {
     Engine::Core::EngineConfig config;
     bool isPhase3Demo = false;
@@ -589,6 +646,7 @@ int main(int argc, char* argv[]) {
     bool isCollisionDemo = false;
     bool isPhysicsDemo = false;
     bool isRenderDemo = false;
+    bool isCameraDemo = false;
 
     for (int i = 1; i < argc; ++i) {
         if (std::strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
@@ -638,6 +696,8 @@ int main(int argc, char* argv[]) {
             isPhysicsDemo = true;
         } else if (std::strcmp(argv[i], "--render") == 0) {
             isRenderDemo = true;
+        } else if (std::strcmp(argv[i], "--camera") == 0) {
+            isCameraDemo = true;
         } else if (std::strcmp(argv[i], "--no-stats") == 0) {
             config.showStats = false;
         } else if (std::strcmp(argv[i], "--help") == 0 || std::strcmp(argv[i], "-h") == 0) {
@@ -713,6 +773,11 @@ int main(int argc, char* argv[]) {
 
     if (isRenderDemo) {
         runRenderDemo();
+        return 0;
+    }
+
+    if (isCameraDemo) {
+        runCameraDemo();
         return 0;
     }
 
