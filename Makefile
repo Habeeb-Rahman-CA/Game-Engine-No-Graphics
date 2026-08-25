@@ -7,6 +7,7 @@ SOURCES = main.cpp \
           src/Core/Engine.cpp \
           src/Core/Time.cpp \
           src/Core/Input.cpp \
+          src/World/World.cpp \
           src/Debug/Logger.cpp
 
 OBJECTS = $(patsubcast %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
@@ -33,7 +34,10 @@ test-phase2: $(TARGET)
 test-phase3: $(TARGET)
 	./$(TARGET) --phase3
 
+test-phase4: $(TARGET)
+	./$(TARGET) --phase4
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 test-phase3 clean
+.PHONY: all run test test-phase2 test-phase3 test-phase4 clean

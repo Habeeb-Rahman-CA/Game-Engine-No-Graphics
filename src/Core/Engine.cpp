@@ -28,7 +28,7 @@ Engine::~Engine() {
 
 bool Engine::initialize() {
     LOG_INFO("==================================================");
-    LOG_INFO("       BASIC GAME ENGINE - CORE PHASE 1           ");
+    LOG_INFO("       BASIC GAME ENGINE - CORE PHASE 4           ");
     LOG_INFO("==================================================");
     
     m_state = EngineState::Initializing;
@@ -37,6 +37,29 @@ bool Engine::initialize() {
     // Initialize subsystems
     m_time.init();
     m_input.init();
+
+    // Phase 4: Create World Entities if none exist
+    if (m_world.get_entity_count() == 0) {
+        LOG_INFO("Initializing World Entities...");
+        
+        using namespace WorldSystem;
+
+        // Entity 1: Player (Transform + Velocity + Health)
+        Entity player = m_world.create_entity("Player");
+        m_world.add_transform(player, Transform(0.0, 0.0, 0.0));
+        m_world.add_velocity(player, Velocity(5.0, 0.0, 0.0));
+        m_world.add_health(player, Health(100.0f, 100.0f));
+
+        // Entity 2: Enemy (Transform + Velocity + Health)
+        Entity enemy = m_world.create_entity("Enemy");
+        m_world.add_transform(enemy, Transform(10.0, 0.0, 0.0));
+        m_world.add_velocity(enemy, Velocity(-2.0, 0.0, 0.0));
+        m_world.add_health(enemy, Health(50.0f, 50.0f));
+
+        // Entity 3: Static Obstacle (Transform only)
+        Entity obstacle = m_world.create_entity("Obstacle");
+        m_world.add_transform(obstacle, Transform(20.0, 5.0, 0.0));
+    }
 
     m_state = EngineState::Running;
     LOG_INFO("Engine State Transition -> RUNNING");
@@ -119,8 +142,10 @@ void Engine::update(double dt) {
 
 void Engine::fixedUpdate(double fixedDt) {
     // Fixed time step update logic (Physics / Deterministic Simulation)
-    // Executes strictly at fixedDt interval (e.g. 1.0 / 60.0 = 60 Hz)
     m_simulatedPosition += m_simulatedVelocity * fixedDt;
+
+    // Update World Entities (Movement system)
+    m_world.update(fixedDt);
 
     if (m_config.logFixedUpdates) {
         std::stringstream ss;
@@ -131,6 +156,10 @@ void Engine::fixedUpdate(double fixedDt) {
            << " | Accumulator = " << std::setprecision(6) << m_time.accumulator() << " s"
            << " | Alpha = " << std::setprecision(3) << m_time.getInterpolationAlpha();
         LOG_INFO(ss.str());
+    }
+
+    if (m_config.logWorldState) {
+        m_world.print_world_state();
     }
 }
 

@@ -4,6 +4,7 @@
 #include "Core/EngineState.hpp"
 #include "Core/Time.hpp"
 #include "Core/Input.hpp"
+#include "World/World.hpp"
 #include <cstdint>
 
 namespace Engine {
@@ -16,6 +17,7 @@ struct EngineConfig {
     bool showStats = true;
     bool logFrameDeltas = false; // Phase 2: Log per-frame delta time details
     bool logFixedUpdates = false; // Phase 3: Log fixed timestep simulation steps
+    bool logWorldState = false;   // Phase 4: Log entity component world state
     double statsIntervalSeconds = 1.0;
 };
 
@@ -35,6 +37,8 @@ public:
     const Time& getTime() const { return m_time; }
     Input& getInput() { return m_input; }
     const Input& getInput() const { return m_input; }
+    WorldSystem::World& getWorld() { return m_world; }
+    const WorldSystem::World& getWorld() const { return m_world; }
 
     void requestShutdown() { m_state = EngineState::Shutdown; }
     void togglePause();
@@ -51,6 +55,7 @@ private:
     EngineConfig m_config;
     Time m_time;
     Input m_input;
+    WorldSystem::World m_world;
 
     // Statistics tracking for render() output
     double m_lastStatsTime;
