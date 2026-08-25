@@ -634,7 +634,7 @@ void runCameraDemo() {
 
 void runSpriteDemo() {
     LOG_INFO("==========================================================================");
-    LOG_INFO("               SPRITE, TEXTURE & ANIMATION DEMONSTRATION                  ");
+    LOG_INFO("              PLAYER ANIMATION STATE MACHINE DEMONSTRATION                ");
     LOG_INFO("==========================================================================");
 
     using namespace Engine::WorldSystem;
@@ -646,36 +646,44 @@ void runSpriteDemo() {
     world.add_system(std::make_unique<AnimationSystem>());
     world.add_system(std::make_unique<MovementSystem>());
 
-    // Create Hero Player with full Component Stack:
+    // Player Entity Composition
     // Player
     // ├── Transform
     // ├── Velocity
     // ├── Collider2D
     // ├── Sprite
     // ├── SpriteSheet
-    // └── Animation
+    // └── Animator (State Machine: idle -> walk -> run -> jump -> fall)
     Entity player = world.create_entity("Player_Hero");
-    world.add_transform(player, Transform(Vec3(5.0, 5.0, 0.0)));
-    world.add_velocity(player, Velocity(Vec3(2.0, 0.0, 0.0)));
-    world.add_collider(player, Collider2D::MakeBox(Vec2(4.0, 4.0)));
+    world.add_transform(player, Transform(Vec3(0.0, 0.0, 0.0)));
+    world.add_velocity(player, Velocity(Vec3(0.0, 0.0, 0.0)));
+    world.add_collider(player, Collider2D::MakeBox(Vec2(2.0, 4.0)));
+    world.add_sprite(player, Sprite("player_spritesheet", Vec2(2.0, 4.0)));
+    world.add_spritesheet(player, SpriteSheet("player_spritesheet", 16, 16, 4, 5)); // 4 cols, 5 rows
 
-    // Add Sprite & SpriteSheet & Animation
-    world.add_sprite(player, Sprite("hero_run_sheet", Vec2(4.0, 4.0)));
-    world.add_spritesheet(player, SpriteSheet("hero_run_sheet", 16, 16, 4, 1)); // 4 frames in 1 row
-    world.add_animation(player, Animation(0, 3, 0.1, true)); // 4-frame run animation (100ms per frame)
+    Animator animator;
+    animator.addClip(AnimationClip("idle", 0, 3, 0.1, true));     // Row 0: Frames 0..3
+    animator.addClip(AnimationClip("walk", 4, 7, 0.1, true));     // Row 1: Frames 4..7
+    animator.addClip(AnimationClip("run", 8, 11, 0.1, true));     // Row 2: Frames 8..11
+    animator.addClip(AnimationClip("jump", 12, 13, 0.1, false));  // Row 3: Frames 12..13
+    animator.addClip(AnimationClip("fall", 14, 15, 0.1, true));   // Row 3: Frames 14..15
+    world.add_animator(player, animator);
 
-    LOG_INFO("\nExecuting Animation Pipeline Over 5 Step Ticks (dt = 0.05s):");
-    for (int step = 1; step <= 5; ++step) {
-        world.update(0.05);
+    std::vector<std::string> stateSequence = {"idle", "walk", "run", "jump", "fall"};
 
-        auto* sprite = world.get_sprite(player);
-        auto* anim   = world.get_animation(player);
-        auto* transform = world.get_transform(player);
+    LOG_INFO("\n--- EXECUTING ANIMATION STATE SEQUENCE ---");
+    for (const auto& state : stateSequence) {
+        auto* animComp = world.get_animator(player);
+        animComp->play(state);
 
-        LOG_INFO("Step " + std::to_string(step) + 
-                 " | Position: " + transform->position.toString() +
-                 " | Current Frame: " + std::to_string(anim->currentFrame) + 
-                 " | Sheet Source Offset: " + sprite->srcOffset.toString());
+        LOG_INFO("\n>>> Transition to State: '" + state + "' <<<");
+        for (int frameTick = 1; frameTick <= 3; ++frameTick) {
+            world.update(0.1); // Step 100ms
+            auto* sprite = world.get_sprite(player);
+            LOG_INFO("State: " + animComp->currentClip +
+                     " | Frame: " + std::to_string(animComp->currentFrame) + 
+                     " | Sheet Offset: " + sprite->srcOffset.toString());
+        }
     }
 
     LOG_INFO("==========================================================================");

@@ -15,6 +15,8 @@ using Vec2 = Math::Vec2;
 using Sprite = RenderSystem::Sprite;
 using Animation = RenderSystem::Animation;
 using SpriteSheet = RenderSystem::SpriteSheet;
+using AnimationClip = RenderSystem::AnimationClip;
+using Animator = RenderSystem::Animator;
 
 struct Transform {
     Vec3 position;

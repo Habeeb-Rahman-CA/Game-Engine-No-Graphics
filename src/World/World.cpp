@@ -73,6 +73,10 @@ void World::add_spritesheet(Entity e, const SpriteSheet& ss) {
     m_spritesheets[e] = ss;
 }
 
+void World::add_animator(Entity e, const Animator& anim) {
+    m_animators[e] = anim;
+}
+
 Transform* World::get_transform(Entity e) {
     auto it = m_transforms.find(e);
     return (it != m_transforms.end()) ? &it->second : nullptr;
@@ -118,6 +122,11 @@ SpriteSheet* World::get_spritesheet(Entity e) {
     return (it != m_spritesheets.end()) ? &it->second : nullptr;
 }
 
+Animator* World::get_animator(Entity e) {
+    auto it = m_animators.find(e);
+    return (it != m_animators.end()) ? &it->second : nullptr;
+}
+
 std::string World::get_name(Entity e) const {
     auto it = m_names.find(e);
     return (it != m_names.end()) ? it->second.name : "Unknown";
@@ -157,6 +166,10 @@ bool World::has_animation(Entity e) const {
 
 bool World::has_spritesheet(Entity e) const {
     return m_spritesheets.find(e) != m_spritesheets.end();
+}
+
+bool World::has_animator(Entity e) const {
+    return m_animators.find(e) != m_animators.end();
 }
 
 #include "System/ISystem.hpp"

@@ -24,6 +24,7 @@ using Collider2D = EntitySystem::Collider2D;
 using Sprite = EntitySystem::Sprite;
 using Animation = EntitySystem::Animation;
 using SpriteSheet = EntitySystem::SpriteSheet;
+using Animator = EntitySystem::Animator;
 using ISystem = Engine::System::ISystem;
 
 class World {
@@ -47,6 +48,7 @@ public:
     void add_sprite(Entity e, const Sprite& s);
     void add_animation(Entity e, const Animation& a);
     void add_spritesheet(Entity e, const SpriteSheet& ss);
+    void add_animator(Entity e, const Animator& anim);
 
     Transform* get_transform(Entity e);
     Velocity* get_velocity(Entity e);
@@ -57,6 +59,7 @@ public:
     Sprite* get_sprite(Entity e);
     Animation* get_animation(Entity e);
     SpriteSheet* get_spritesheet(Entity e);
+    Animator* get_animator(Entity e);
     std::string get_name(Entity e) const;
 
     bool has_transform(Entity e) const;
@@ -68,6 +71,7 @@ public:
     bool has_sprite(Entity e) const;
     bool has_animation(Entity e) const;
     bool has_spritesheet(Entity e) const;
+    bool has_animator(Entity e) const;
 
     // System Pipeline Management
     void add_system(std::unique_ptr<ISystem> system);
@@ -90,6 +94,7 @@ private:
     std::unordered_map<Entity, Sprite> m_sprites;
     std::unordered_map<Entity, Animation> m_animations;
     std::unordered_map<Entity, SpriteSheet> m_spritesheets;
+    std::unordered_map<Entity, Animator> m_animators;
     std::unordered_map<Entity, NameTag> m_names;
 
     // Registered Systems Pipeline

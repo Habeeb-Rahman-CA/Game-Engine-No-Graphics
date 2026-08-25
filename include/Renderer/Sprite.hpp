@@ -4,6 +4,7 @@
 #include "Math/Vec2.hpp"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace Engine {
 namespace RenderSystem {
@@ -63,6 +64,47 @@ struct Animation {
     Animation(int start, int end, double duration = 0.1, bool isLooping = true)
         : startFrame(start), endFrame(end), currentFrame(start),
           frameDuration(duration), loop(isLooping), playing(true) {}
+};
+
+struct AnimationClip {
+    std::string name;
+    int startFrame = 0;
+    int endFrame = 0;
+    double frameDuration = 0.1;
+    bool loop = true;
+
+    AnimationClip() = default;
+    AnimationClip(const std::string& n, int start, int end, double duration = 0.1, bool isLooping = true)
+        : name(n), startFrame(start), endFrame(end), frameDuration(duration), loop(isLooping) {}
+};
+
+struct Animator {
+    std::unordered_map<std::string, AnimationClip> clips;
+    std::string currentClip = "idle";
+    int currentFrame = 0;
+    double elapsedTime = 0.0;
+    bool playing = true;
+
+    void addClip(const AnimationClip& clip) {
+        clips[clip.name] = clip;
+        if (currentClip.empty()) {
+            currentClip = clip.name;
+            currentFrame = clip.startFrame;
+        }
+    }
+
+    bool play(const std::string& clipName) {
+        if (currentClip == clipName) return true;
+        auto it = clips.find(clipName);
+        if (it != clips.end()) {
+            currentClip = clipName;
+            currentFrame = it->second.startFrame;
+            elapsedTime = 0.0;
+            playing = true;
+            return true;
+        }
+        return false;
+    }
 };
 
 } // namespace RenderSystem
