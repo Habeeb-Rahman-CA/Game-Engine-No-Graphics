@@ -15,6 +15,7 @@ struct EngineConfig {
     uint64_t maxFramesToRun = 0; // 0 = infinite (run until quit)
     bool showStats = true;
     bool logFrameDeltas = false; // Phase 2: Log per-frame delta time details
+    bool logFixedUpdates = false; // Phase 3: Log fixed timestep simulation steps
     double statsIntervalSeconds = 1.0;
 };
 
@@ -56,6 +57,10 @@ private:
     uint64_t m_lastFrameCount;
     uint64_t m_lastFixedUpdateCount;
     bool m_verboseRender;
+
+    // Phase 3 Deterministic Physics Simulation State
+    double m_simulatedPosition;
+    double m_simulatedVelocity;
 };
 
 } // namespace Core

@@ -33,6 +33,14 @@ public:
     unsigned long long fixedUpdateCount() const { return m_fixedUpdateCount; }
     double targetFps() const { return m_targetFps; }
 
+    // =========================================================================
+    // PHASE 3 FIXED TIMESTEP & INTERPOLATION
+    // =========================================================================
+    double accumulator() const { return m_accumulator; }
+    double getInterpolationAlpha() const { 
+        return (m_fixedDeltaTime > 0.0) ? (m_accumulator / m_fixedDeltaTime) : 0.0; 
+    }
+
     // Setters
     void setFixedDeltaTime(double seconds) { m_fixedDeltaTime = seconds; }
     void setTargetFps(double fps) { m_targetFps = fps; }

@@ -30,7 +30,10 @@ test: $(TARGET)
 test-phase2: $(TARGET)
 	./$(TARGET) --phase2
 
+test-phase3: $(TARGET)
+	./$(TARGET) --phase3
+
 clean:
 	rm -rf $(BUILD_DIR)
 
-.PHONY: all run test test-phase2 clean
+.PHONY: all run test test-phase2 test-phase3 clean

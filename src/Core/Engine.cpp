@@ -15,7 +15,9 @@ Engine::Engine(const EngineConfig& config)
     , m_lastStatsTime(0.0)
     , m_lastFrameCount(0)
     , m_lastFixedUpdateCount(0)
-    , m_verboseRender(config.showStats) {
+    , m_verboseRender(config.showStats)
+    , m_simulatedPosition(0.0)
+    , m_simulatedVelocity(10.0) {
 }
 
 Engine::~Engine() {
@@ -116,9 +118,20 @@ void Engine::update(double dt) {
 }
 
 void Engine::fixedUpdate(double fixedDt) {
-    // Fixed time step update logic (Physics, fixed simulation step)
-    // Runs at constant intervals regardless of frame rate dips/spikes.
-    (void)fixedDt;
+    // Fixed time step update logic (Physics / Deterministic Simulation)
+    // Executes strictly at fixedDt interval (e.g. 1.0 / 60.0 = 60 Hz)
+    m_simulatedPosition += m_simulatedVelocity * fixedDt;
+
+    if (m_config.logFixedUpdates) {
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(6);
+        ss << "  [FIXED SIM TICK #" << m_time.fixedUpdateCount() << "]"
+           << " fixed_dt = " << fixedDt << " s"
+           << " | Position = " << std::setprecision(4) << m_simulatedPosition
+           << " | Accumulator = " << std::setprecision(6) << m_time.accumulator() << " s"
+           << " | Alpha = " << std::setprecision(3) << m_time.getInterpolationAlpha();
+        LOG_INFO(ss.str());
+    }
 }
 
 void Engine::render() {
