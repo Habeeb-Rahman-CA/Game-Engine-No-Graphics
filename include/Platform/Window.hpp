@@ -38,10 +38,33 @@ public:
 
     void set_pixel(int x, int y, uint32_t color);
 
+    // Mouse and Keyboard Input API
+    int get_mouse_x() const { return m_mouseX; }
+    int get_mouse_y() const { return m_mouseY; }
+    bool is_mouse_down(int button = 1) const { return (button == 1) ? m_mouseLeftDown : m_mouseRightDown; }
+    bool was_mouse_clicked(int button = 1) {
+        if (button == 1) { bool c = m_mouseLeftClicked; m_mouseLeftClicked = false; return c; }
+        else { bool c = m_mouseRightClicked; m_mouseRightClicked = false; return c; }
+    }
+    void reset_frame_input() {
+        m_mouseLeftClicked = false;
+        m_mouseRightClicked = false;
+        m_lastKeyChar = 0;
+    }
+    char get_last_key_char() const { return m_lastKeyChar; }
+
 private:
     WindowProps m_props;
     bool m_shouldClose;
     std::vector<uint32_t> m_pixelBuffer;
+
+    int m_mouseX = 0;
+    int m_mouseY = 0;
+    bool m_mouseLeftDown = false;
+    bool m_mouseRightDown = false;
+    bool m_mouseLeftClicked = false;
+    bool m_mouseRightClicked = false;
+    char m_lastKeyChar = 0;
 
     // Platform specific native window handles
     void* m_displayHandle; // Display*

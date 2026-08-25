@@ -39,7 +39,7 @@ bool Window::initialize() {
     m_windowHandle = static_cast<uint64_t>(win);
 
     XStoreName(display, win, m_props.title.c_str());
-    XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | StructureNotifyMask);
+    XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask | StructureNotifyMask);
     XMapWindow(display, win);
 
     // Prepare XImage for framebuffer blitting
@@ -64,10 +64,35 @@ void Window::poll_events() {
 
         if (event.type == DestroyNotify) {
             m_shouldClose = true;
+        } else if (event.type == MotionNotify) {
+            m_mouseX = event.xmotion.x;
+            m_mouseY = event.xmotion.y;
+        } else if (event.type == ButtonPress) {
+            m_mouseX = event.xbutton.x;
+            m_mouseY = event.xbutton.y;
+            if (event.xbutton.button == 1) {
+                m_mouseLeftDown = true;
+                m_mouseLeftClicked = true;
+            } else if (event.xbutton.button == 3) {
+                m_mouseRightDown = true;
+                m_mouseRightClicked = true;
+            }
+        } else if (event.type == ButtonRelease) {
+            m_mouseX = event.xbutton.x;
+            m_mouseY = event.xbutton.y;
+            if (event.xbutton.button == 1) {
+                m_mouseLeftDown = false;
+            } else if (event.xbutton.button == 3) {
+                m_mouseRightDown = false;
+            }
         } else if (event.type == KeyPress) {
             KeySym keysym = XLookupKeysym(&event.xkey, 0);
             if (keysym == XK_Escape) {
                 m_shouldClose = true;
+            }
+            char buf[8] = {0};
+            if (XLookupString(&event.xkey, buf, sizeof(buf), nullptr, nullptr) > 0) {
+                m_lastKeyChar = buf[0];
             }
         }
     }

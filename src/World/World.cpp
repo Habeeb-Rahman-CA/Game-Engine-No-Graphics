@@ -143,6 +143,10 @@ std::string World::get_name(Entity e) const {
     return (it != m_names.end()) ? it->second.name : "Unknown";
 }
 
+void World::set_name(Entity e, const std::string& name) {
+    m_names[e] = NameTag(name);
+}
+
 bool World::has_transform(Entity e) const {
     return m_transforms.find(e) != m_transforms.end();
 }

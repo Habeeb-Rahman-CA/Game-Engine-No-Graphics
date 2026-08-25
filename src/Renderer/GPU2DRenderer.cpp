@@ -16,9 +16,9 @@ GPU2DRenderer::GPU2DRenderer(Platform::Window* window)
 }
 
 uint32_t GPU2DRenderer::colorToHex(const Color& c) {
-    uint32_t r = static_cast<uint32_t>(c.r * 255.0f);
-    uint32_t g = static_cast<uint32_t>(c.g * 255.0f);
-    uint32_t b = static_cast<uint32_t>(c.b * 255.0f);
+    uint32_t r = static_cast<uint32_t>(c.r);
+    uint32_t g = static_cast<uint32_t>(c.g);
+    uint32_t b = static_cast<uint32_t>(c.b);
     return (r << 16) | (g << 8) | b;
 }
 

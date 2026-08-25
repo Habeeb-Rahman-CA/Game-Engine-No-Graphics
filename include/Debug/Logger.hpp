@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 namespace Engine {
 namespace Debug {
@@ -15,13 +16,22 @@ enum class LogLevel {
     Error
 };
 
+struct LogEntry {
+    LogLevel level;
+    std::string timestamp;
+    std::string message;
+};
+
 class Logger {
 public:
     static void setLogLevel(LogLevel level);
     static void log(LogLevel level, const std::string& message, const char* file = nullptr, int line = 0);
+    static const std::vector<LogEntry>& getLogHistory();
+    static void clearHistory();
 
 private:
     static LogLevel s_minLevel;
+    static std::vector<LogEntry> s_logHistory;
     static std::string levelToString(LogLevel level);
     static std::string levelToColor(LogLevel level);
     static std::string getCurrentTimeString();

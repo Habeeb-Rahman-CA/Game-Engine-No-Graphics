@@ -68,6 +68,7 @@ public:
     Animator* get_animator(Entity e);
     EnemyAI* get_ai(Entity e);
     std::string get_name(Entity e) const;
+    void set_name(Entity e, const std::string& name);
 
     bool has_transform(Entity e) const;
     bool has_velocity(Entity e) const;

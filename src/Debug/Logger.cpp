@@ -7,9 +7,18 @@ namespace Engine {
 namespace Debug {
 
 LogLevel Logger::s_minLevel = LogLevel::Info;
+std::vector<LogEntry> Logger::s_logHistory;
 
 void Logger::setLogLevel(LogLevel level) {
     s_minLevel = level;
+}
+
+const std::vector<LogEntry>& Logger::getLogHistory() {
+    return s_logHistory;
+}
+
+void Logger::clearHistory() {
+    s_logHistory.clear();
 }
 
 std::string Logger::levelToString(LogLevel level) {
@@ -49,8 +58,14 @@ std::string Logger::getCurrentTimeString() {
 void Logger::log(LogLevel level, const std::string& message, const char* file, int line) {
     if (level < s_minLevel) return;
 
+    std::string timeStr = getCurrentTimeString();
+    if (s_logHistory.size() >= 100) {
+        s_logHistory.erase(s_logHistory.begin());
+    }
+    s_logHistory.push_back({level, timeStr, message});
+
     std::stringstream ss;
-    ss << "[" << getCurrentTimeString() << "] "
+    ss << "[" << timeStr << "] "
        << levelToColor(level) << "[" << levelToString(level) << "]\033[0m ";
 
     if (file && (level == LogLevel::Error || level == LogLevel::Warning || level == LogLevel::Debug)) {

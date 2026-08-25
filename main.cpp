@@ -1,6 +1,7 @@
 #include "Core/Engine.hpp"
 #include "Debug/Logger.hpp"
 #include "Math/Math.hpp"
+#include "Editor/Editor.hpp"
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -1149,14 +1150,12 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Engine::Core::Engine engine(config);
-
-    if (!engine.initialize()) {
-        LOG_ERROR("Failed to initialize engine core!");
+    Engine::EditorSystem::Editor editor;
+    if (!editor.initialize(1024, 640)) {
+        LOG_ERROR("Failed to initialize Game Engine Editor!");
         return 1;
     }
 
-    engine.run();
-
+    editor.run();
     return 0;
 }
