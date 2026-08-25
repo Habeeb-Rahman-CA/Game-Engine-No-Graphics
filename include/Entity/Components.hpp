@@ -4,6 +4,7 @@
 #include "Math/Vec3.hpp"
 #include "Math/Vec2.hpp"
 #include "Math/Geometry.hpp"
+#include "Renderer/Sprite.hpp"
 #include <string>
 
 namespace Engine {
@@ -11,6 +12,9 @@ namespace EntitySystem {
 
 using Vec3 = Math::Vec3;
 using Vec2 = Math::Vec2;
+using Sprite = RenderSystem::Sprite;
+using Animation = RenderSystem::Animation;
+using SpriteSheet = RenderSystem::SpriteSheet;
 
 struct Transform {
     Vec3 position;

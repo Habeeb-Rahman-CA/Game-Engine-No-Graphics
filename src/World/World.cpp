@@ -29,6 +29,9 @@ void World::destroy_entity(Entity entity) {
         m_rigidbodies.erase(entity);
         m_healths.erase(entity);
         m_colliders.erase(entity);
+        m_sprites.erase(entity);
+        m_animations.erase(entity);
+        m_spritesheets.erase(entity);
         m_names.erase(entity);
         LOG_INFO("Destroyed Entity ID: " + std::to_string(entity) + " ('" + name + "')");
     }
@@ -56,6 +59,18 @@ void World::add_health(Entity e, const Health& h) {
 
 void World::add_collider(Entity e, const Collider2D& c) {
     m_colliders[e] = c;
+}
+
+void World::add_sprite(Entity e, const Sprite& s) {
+    m_sprites[e] = s;
+}
+
+void World::add_animation(Entity e, const Animation& a) {
+    m_animations[e] = a;
+}
+
+void World::add_spritesheet(Entity e, const SpriteSheet& ss) {
+    m_spritesheets[e] = ss;
 }
 
 Transform* World::get_transform(Entity e) {
@@ -88,6 +103,21 @@ Collider2D* World::get_collider(Entity e) {
     return (it != m_colliders.end()) ? &it->second : nullptr;
 }
 
+Sprite* World::get_sprite(Entity e) {
+    auto it = m_sprites.find(e);
+    return (it != m_sprites.end()) ? &it->second : nullptr;
+}
+
+Animation* World::get_animation(Entity e) {
+    auto it = m_animations.find(e);
+    return (it != m_animations.end()) ? &it->second : nullptr;
+}
+
+SpriteSheet* World::get_spritesheet(Entity e) {
+    auto it = m_spritesheets.find(e);
+    return (it != m_spritesheets.end()) ? &it->second : nullptr;
+}
+
 std::string World::get_name(Entity e) const {
     auto it = m_names.find(e);
     return (it != m_names.end()) ? it->second.name : "Unknown";
@@ -115,6 +145,18 @@ bool World::has_health(Entity e) const {
 
 bool World::has_collider(Entity e) const {
     return m_colliders.find(e) != m_colliders.end();
+}
+
+bool World::has_sprite(Entity e) const {
+    return m_sprites.find(e) != m_sprites.end();
+}
+
+bool World::has_animation(Entity e) const {
+    return m_animations.find(e) != m_animations.end();
+}
+
+bool World::has_spritesheet(Entity e) const {
+    return m_spritesheets.find(e) != m_spritesheets.end();
 }
 
 #include "System/ISystem.hpp"

@@ -19,12 +19,15 @@ void RenderSystem::update(WorldSystem::World& world, double dt) {
     for (EntitySystem::Entity e : world.get_entities()) {
         auto* transform = world.get_transform(e);
         auto* collider  = world.get_collider(e);
+        auto* sprite    = world.get_sprite(e);
 
         if (!transform) continue;
 
         Math::Vec2 pos(transform->position.x, transform->position.y);
 
-        if (collider) {
+        if (sprite) {
+            Renderer::draw_sprite(sprite->textureId, pos, sprite->size);
+        } else if (collider) {
             if (collider->type == EntitySystem::ColliderType::Box) {
                 Math::AABB worldBox(collider->box.minBound + pos, collider->box.maxBound + pos);
                 Renderer::draw_rect(worldBox, Color::Green, true);

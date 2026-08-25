@@ -21,6 +21,9 @@ using RigidBody2D = EntitySystem::RigidBody2D;
 using Health = EntitySystem::Health;
 using NameTag = EntitySystem::NameTag;
 using Collider2D = EntitySystem::Collider2D;
+using Sprite = EntitySystem::Sprite;
+using Animation = EntitySystem::Animation;
+using SpriteSheet = EntitySystem::SpriteSheet;
 using ISystem = Engine::System::ISystem;
 
 class World {
@@ -41,6 +44,9 @@ public:
     void add_rigidbody(Entity e, const RigidBody2D& rb);
     void add_health(Entity e, const Health& h);
     void add_collider(Entity e, const Collider2D& c);
+    void add_sprite(Entity e, const Sprite& s);
+    void add_animation(Entity e, const Animation& a);
+    void add_spritesheet(Entity e, const SpriteSheet& ss);
 
     Transform* get_transform(Entity e);
     Velocity* get_velocity(Entity e);
@@ -48,6 +54,9 @@ public:
     RigidBody2D* get_rigidbody(Entity e);
     Health* get_health(Entity e);
     Collider2D* get_collider(Entity e);
+    Sprite* get_sprite(Entity e);
+    Animation* get_animation(Entity e);
+    SpriteSheet* get_spritesheet(Entity e);
     std::string get_name(Entity e) const;
 
     bool has_transform(Entity e) const;
@@ -56,6 +65,9 @@ public:
     bool has_rigidbody(Entity e) const;
     bool has_health(Entity e) const;
     bool has_collider(Entity e) const;
+    bool has_sprite(Entity e) const;
+    bool has_animation(Entity e) const;
+    bool has_spritesheet(Entity e) const;
 
     // System Pipeline Management
     void add_system(std::unique_ptr<ISystem> system);
@@ -75,6 +87,9 @@ private:
     std::unordered_map<Entity, RigidBody2D> m_rigidbodies;
     std::unordered_map<Entity, Health> m_healths;
     std::unordered_map<Entity, Collider2D> m_colliders;
+    std::unordered_map<Entity, Sprite> m_sprites;
+    std::unordered_map<Entity, Animation> m_animations;
+    std::unordered_map<Entity, SpriteSheet> m_spritesheets;
     std::unordered_map<Entity, NameTag> m_names;
 
     // Registered Systems Pipeline
